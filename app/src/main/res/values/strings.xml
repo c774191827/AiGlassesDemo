@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">LinWearAiGlasses</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">confirm</string>
+    <string name="loading">Loading</string>
+    <string name="data_request_failed">Data request failed</string>
+    <string name="data_request_hint">Data request hint</string>
+    <string name="refresh">Refresh</string>
+    <string name="no_data_available">No data available</string>
 </resources>

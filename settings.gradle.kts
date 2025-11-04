@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "LinWearAiGlasses"
 include(":app")
- 
+include(":lib_core")
