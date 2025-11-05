@@ -2,7 +2,6 @@ package com.lw.ai.glasses.ui.image
 
 import BaseViewModel
 import androidx.lifecycle.viewModelScope
-import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.fission.wear.glasses.sdk.GlassesManage
 import com.fission.wear.glasses.sdk.events.FileSyncEvent

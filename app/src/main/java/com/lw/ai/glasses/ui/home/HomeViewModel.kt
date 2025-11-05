@@ -5,7 +5,6 @@ import android.Manifest
 import android.content.Context
 import android.os.Build
 import androidx.lifecycle.viewModelScope
-import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.fission.wear.glasses.sdk.GlassesManage
 import com.fission.wear.glasses.sdk.config.BleComConfig
