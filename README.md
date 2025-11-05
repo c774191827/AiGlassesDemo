@@ -82,9 +82,19 @@ AI 功能包括 **语音对话、图像识别、翻译** 等。可选择两种�
 GlassesManage.connectAiAssistant()
 ```
 
-### ✅ 自定义大模型（App 自己实现）
+### ✅ 自定义大模型（App 自己实现,不要调用connectAiAssistant()方法）
 请参考 Demo 中的 `AudioStateEvent` 实现。  
 `GlassesManage.initialize()` 的第三个参数传入 `true` 即可启用自定义模式。
+
+- **StartRecording**：开始录音
+- **ReceivingAudioData**：持续接收录音数据
+
+需要 AI 识图时，调用：
+- **GlassesManage.takePicture()**
+  - 回调事件：**CmdResultEvent.ImageData**（接收图片数据）
+
+停止录音时，调用：
+- **GlassesManage.stopVadAudio()**
 
 ---
 
@@ -123,5 +133,51 @@ GlassesManage.connectAiAssistant()
 - `Failed`：错误（参考错误码文档）
 
 ---
+
+---
+
+## ⚠️ 错误码说明（Error Code Reference）
+
+| 错误码 | 名称 | 描述 |
+|:-------:|:------|:------|
+| **1001** | ERROR_CODE_SDK_NOT_INITIALIZED | SDK 未初始化 |
+
+### 🖼️ 图片传输相关错误（2001 - 2011）
+
+| 错误码 | 名称 | 描述 |
+|:-------:|:------|:------|
+| **2001** | ERROR_CODE_IMAGE_PACKET_TOO_SHORT | 包长度过短 |
+| **2002** | ERROR_CODE_IMAGE_INVALID_HEADER | 包头错误 |
+| **2003** | ERROR_CODE_IMAGE_INVALID_FOOTER | 包尾错误 |
+| **2004** | ERROR_CODE_IMAGE_CRC_FAILURE | CRC 校验失败 |
+| **2005** | ERROR_CODE_IMAGE_NO_HEADER_RECEIVED | 未收到文件头就收到了数据包 |
+| **2006** | ERROR_CODE_IMAGE_INCOMPLETE | 文件接收不完整 |
+| **2007** | ERROR_CODE_IMAGE_TIMEOUT | 接收超时 |
+| **2008** | ERROR_CODE_IMAGE_UNKNOWN_CMD | 未知的图片传输指令 |
+| **2009** | ERROR_CODE_IMAGE_INVALID_DATA_PACKET | 无效的数据包 |
+| **2010** | ERROR_CODE_IMAGE_SAVE | 图片保存失败 |
+| **2011** | ERROR_CODE_IMAGE_RECOGNITION | 图片识别失败 |
+
+### 📶 Wi-Fi 连接相关错误（3001 - 3004）
+
+| 错误码 | 名称 | 描述 |
+|:-------:|:------|:------|
+| **3001** | ERROR_CODE_WIFI_CONNECT_TIMEOUT | 连接 Wi-Fi 总流程超时 |
+| **3002** | ERROR_CODE_WIFI_DEVICE_DISCOVERY_TIMEOUT | 发现 Wi-Fi 设备超时 |
+| **3003** | ERROR_CODE_WIFI_NEGOTIATION_TIMEOUT | Wi-Fi 连接协商超时 |
+| **3004** | ERROR_CODE_WIFI_UNKNOWN_ERROR | Wi-Fi 连接未知错误 |
+
+### 📂 文件下载相关错误（3101 - 3105）
+
+| 错误码 | 名称 | 描述 |
+|:-------:|:------|:------|
+| **3101** | ERROR_CODE_DOWNLOAD_GET_FILE_LIST_FAILED | 获取文件列表失败 |
+| **3102** | ERROR_CODE_DOWNLOAD_FILE_NOT_FOUND | 目标文件未找到 |
+| **3103** | ERROR_CODE_DOWNLOAD_FAILED | 文件下载失败（通用） |
+| **3104** | ERROR_CODE_DOWNLOAD_NETWORK_ERROR | 网络错误 |
+| **3105** | ERROR_CODE_DOWNLOAD_DELETE | 文件删除失败 |
+
+---
+
 
 > 📘 **提示：** 所有接口与事件回调请参考 Demo 中的完整示例代码。

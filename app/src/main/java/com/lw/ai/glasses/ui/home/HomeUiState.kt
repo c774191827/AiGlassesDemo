@@ -35,8 +35,8 @@ data class HomeUiState(
                     route = "sync_photos",
                     badgeCount = pendingSyncPhotosCount
                 ),
-                Feature(id = "ai_chat", name = "AI对话", icon = Icons.Default.QuestionAnswer, route = "ai_chat"),
-                Feature(id = "ai_vision", name = "AI识图", icon = Icons.Default.ImageSearch, route = "ai_vision"),
+                Feature(id = "ai_chat", name = "AI对话", icon = Icons.Default.QuestionAnswer, route = "assistant"),
+                Feature(id = "ai_vision", name = "AI识图", icon = Icons.Default.ImageSearch, route = "assistant"),
                 Feature(id = "ai_translate", name = "AI翻译", icon = Icons.Default.Translate, route = "ai_translate"),
                 Feature(id = "glasses_settings", name = "眼镜设置", icon = Icons.Default.Settings, route = "glasses_settings")
             )

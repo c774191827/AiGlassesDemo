@@ -127,6 +127,8 @@ class HomeViewModel @Inject constructor(
                             )
                         }
                         GlassesManage.getDevicePower()
+                        GlassesManage.getMediaFileCount()
+                        GlassesManage.connectAiAssistant()
                     }
 
                     is ConnectionStateEvent.Disconnected -> {

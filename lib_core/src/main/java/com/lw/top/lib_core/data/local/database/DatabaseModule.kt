@@ -1,6 +1,7 @@
 package com.lw.top.lib_core.data.local.database
 
 import android.content.Context
+import com.lw.top.lib_core.data.local.dao.AiAssistantDao
 import com.lw.top.lib_core.data.local.dao.MediaFilesDao
 import com.lw.top.lib_core.data.local.dao.UsersDao
 import dagger.Module
@@ -13,7 +14,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
-
     @Provides
     @Singleton
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
@@ -28,5 +28,10 @@ object DatabaseModule {
     @Provides
     fun provideMediaFilesDao(appDatabase: AppDatabase): MediaFilesDao {
         return appDatabase.mediaFilesDao()
+    }
+
+    @Provides
+    fun provideAiAssistantDao(appDatabase: AppDatabase): AiAssistantDao {
+        return appDatabase.aiAssistantDao()
     }
 }

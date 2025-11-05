@@ -72,7 +72,8 @@ import com.polidea.rxandroidble3.scan.ScanResult
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
-    onNavigateToImage: () -> Unit
+    onNavigateToImage: () -> Unit,
+    onNavigateToAssistant: () -> Unit
 ) {
     var showScanningDevices by remember { mutableStateOf(false) }
     val uiState by viewModel.uiState.collectAsState()
@@ -141,6 +142,9 @@ fun HomeScreen(
                         when (feature.route) {
                             Screen.Image.route -> {
                                 onNavigateToImage()
+                            }
+                            Screen.Assistant.route -> {
+                                onNavigateToAssistant()
                             }
                             else -> {
                             }

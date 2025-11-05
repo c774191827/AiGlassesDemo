@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.blankj.utilcode.util.LogUtils
+import com.lw.ai.glasses.ui.assistant.AiAssistantScreen
 import com.lw.ai.glasses.ui.home.HomeScreen
 import com.lw.ai.glasses.ui.image.ImageScreen
 
@@ -37,6 +38,9 @@ fun AppNavHost() {
             HomeScreen(
                 onNavigateToImage = {
                     navController.navigate(Screen.Image.route)
+                },
+                onNavigateToAssistant = {
+                    navController.navigate(Screen.Assistant.route)
                 }
             )
         }
@@ -46,5 +50,12 @@ fun AppNavHost() {
                 navController.popBackStack()
             })
         }
+
+        composable(Screen.Assistant.route) {
+            AiAssistantScreen(onNavigateBack = {
+                navController.popBackStack()
+            })
+        }
+
     }
 }

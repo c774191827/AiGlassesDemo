@@ -40,14 +40,17 @@ class ImageViewModel @Inject constructor(
     )
 
     init {
-//        viewModelScope.launch {
-//            photoRepository.clearAllPhotos()
-//        }
         observeGlassesEvents()
     }
 
 
-    fun syncAllMediaFile(){
+    fun clearAllPhotos() {//App 清理的时候。根据文件地址路径。清除下缓存
+        viewModelScope.launch {
+            photoRepository.clearAllPhotos()
+        }
+    }
+
+    fun syncAllMediaFile() {
         if (_syncState.value.isSyncing) {
             ToastUtils.showLong("文件正在同步中")
             return
