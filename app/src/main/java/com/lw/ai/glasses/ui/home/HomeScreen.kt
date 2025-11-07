@@ -1,5 +1,6 @@
 package com.lw.ai.glasses.ui.home
 
+import Screen
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -64,7 +65,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.blankj.utilcode.util.LogUtils
 import com.lw.ai.glasses.ui.base.screen.popup.CenteredFadeInPopup
 import com.polidea.rxandroidble3.scan.ScanResult
 
@@ -73,7 +73,8 @@ import com.polidea.rxandroidble3.scan.ScanResult
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onNavigateToImage: () -> Unit,
-    onNavigateToAssistant: () -> Unit
+    onNavigateToAssistant: () -> Unit,
+    onNavigateToSetting: () -> Unit
 ) {
     var showScanningDevices by remember { mutableStateOf(false) }
     val uiState by viewModel.uiState.collectAsState()
@@ -145,6 +146,9 @@ fun HomeScreen(
                             }
                             Screen.Assistant.route -> {
                                 onNavigateToAssistant()
+                            }
+                            Screen.Setting.route -> {
+                                onNavigateToSetting()
                             }
                             else -> {
                             }

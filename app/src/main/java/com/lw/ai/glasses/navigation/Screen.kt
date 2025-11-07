@@ -4,6 +4,6 @@ sealed class Screen(val route: String) {
 
     object Assistant : Screen("assistant")
 
-    object Setting : Screen("setting")
+    object Setting : Screen("glasses_settings")
 
 }

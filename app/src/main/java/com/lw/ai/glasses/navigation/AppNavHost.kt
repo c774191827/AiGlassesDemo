@@ -11,6 +11,7 @@ import com.blankj.utilcode.util.LogUtils
 import com.lw.ai.glasses.ui.assistant.AiAssistantScreen
 import com.lw.ai.glasses.ui.home.HomeScreen
 import com.lw.ai.glasses.ui.image.ImageScreen
+import com.lw.ai.glasses.ui.setting.SettingScreen
 
 @SuppressLint("RestrictedApi", "UnrememberedGetBackStackEntry")
 @ExperimentalMaterial3Api
@@ -41,6 +42,9 @@ fun AppNavHost() {
                 },
                 onNavigateToAssistant = {
                     navController.navigate(Screen.Assistant.route)
+                },
+                onNavigateToSetting = {
+                    navController.navigate(Screen.Setting.route)
                 }
             )
         }
@@ -53,6 +57,12 @@ fun AppNavHost() {
 
         composable(Screen.Assistant.route) {
             AiAssistantScreen(onNavigateBack = {
+                navController.popBackStack()
+            })
+        }
+
+        composable(Screen.Setting.route) {
+            SettingScreen(onNavigateBack = {
                 navController.popBackStack()
             })
         }

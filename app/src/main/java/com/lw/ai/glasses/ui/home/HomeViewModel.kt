@@ -131,6 +131,10 @@ class HomeViewModel @Inject constructor(
                     }
 
                     is ConnectionStateEvent.Disconnected -> {
+                        _uiState.update {
+                            it.copy(connectionState = ConnectionState.DISCONNECTED)
+                        }
+
                         if (error is BleDisconnectedException || error is BleGattException) {
                             _uiState.update {
                                 it.copy(connectionState = ConnectionState.DISCONNECTED)
@@ -138,6 +142,7 @@ class HomeViewModel @Inject constructor(
                         } else {
 
                         }
+
                     }
 
                     is CmdResultEvent.DevicePower -> {
