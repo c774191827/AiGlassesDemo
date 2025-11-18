@@ -1,33 +1,47 @@
 package com.lw.ai.glasses.ui.setting
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -37,74 +51,158 @@ import androidx.hilt.navigation.compose.hiltViewModel
 fun SettingScreen(
     viewModel: SettingViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit
-){
+) {
     val uiState by viewModel.uiState.collectAsState()
+    var showInputDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    // 建议将"设置"作为字符串资源
-                    Text(text = "设置")
-                },
+                title = { Text("设备设置") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回" // for accessibility
+                            contentDescription = "返回"
                         )
                     }
                 }
             )
+        },
+        bottomBar = {
+            Button(
+                onClick = viewModel::onDisconnect,
+                enabled = uiState.disconnectAction.isEnabled,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+            ) {
+                Text(uiState.disconnectAction.title)
+            }
         }
-    ) { innerPadding ->
-        Column(
+    ) { paddingValues ->
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(paddingValues)
         ) {
-            LazyColumn(
-                modifier = Modifier.weight(1f)
-            ) {
-                items(uiState.settingItems) { item ->
+            itemsIndexed(
+                items = uiState.settingItems,
+                key = { index, item ->
                     when (item) {
-                        is SettingItem.ActionItem -> ActionItemView(item = item) { /* ... */ }
-                        is SettingItem.SwitchItem -> SwitchItemView(item = item) { /* ... */ }
-                        is SettingItem.InfoItem -> InfoItemView(item = item)
-                        is SettingItem.Divider -> HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                        is SettingItem.ActionItem -> "action_${item.id}"
+                        is SettingItem.DropdownItem<*> -> "dropdown_${item.id}"
+                        is SettingItem.InfoItem -> "info_${item.title}"
+                        is SettingItem.SwitchItem -> "switch_${item.id}"
+                        is SettingItem.Divider -> "divider_$index"
+                    }
+                }
+            ) { _, item ->
+                when (item) {
+                    is SettingItem.DropdownItem<*> -> {
+                        DropdownSettingItem(item = item, onItemSelected = viewModel::onSettingSelected)
+                    }
+                    is SettingItem.SwitchItem -> {
+                        SwitchSettingItem(item = item, onCheckedChange = { /* TODO */ })
+                    }
+                    is SettingItem.ActionItem -> {
+                        ActionSettingItem(item = item) {
+                            if (item.id == "record_duration") {
+                                showInputDialog = true
+                            } else {
+                                // TODO: Handle other ActionItem clicks
+                            }
+                        }
+                    }
+                    is SettingItem.InfoItem -> {
+                        InfoSettingItem(item = item)
+                    }
+                    is SettingItem.Divider -> {
+                        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
                     }
                 }
             }
+        }
 
-            // 底部断开连接按钮
-            DisconnectButton(
-                state = uiState.disconnectAction,
-                onClick = { viewModel.onDisconnect() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp) // 给按钮周围留出一些边距
+        if (showInputDialog) {
+            RecordDurationInputDialog(
+                onDismiss = { showInputDialog = false },
+                onConfirm = { duration ->
+                    viewModel.onRecordDurationChanged(duration)
+                    showInputDialog = false
+                }
             )
         }
     }
 }
 
+@Composable
+private fun RecordDurationInputDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (Int) -> Unit
+) {
+    var text by remember { mutableStateOf("") }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("设置录像时长") },
+        text = {
+            OutlinedTextField(
+                value = text,
+                onValueChange = { text = it.filter { char -> char.isDigit() } },
+                label = { Text("时长（秒）") },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = { text.toIntOrNull()?.let(onConfirm) },
+                enabled = text.isNotBlank()
+            ) {
+                Text("确认")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("取消")
+            }
+        }
+    )
+}
 
 @Composable
-private fun ActionItemView(item: SettingItem.ActionItem, onClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(enabled = item.isEnabled, onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 18.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(text = item.title, fontSize = 16.sp)
-            if (item.summary != null) {
-                Text(
-                    text = item.summary,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontSize = 14.sp
+fun <T> DropdownSettingItem(
+    item: SettingItem.DropdownItem<T>,
+    onItemSelected: (String, T) -> Unit
+) {
+    var isDropdownExpanded by remember { mutableStateOf(false) }
+
+    Box {
+        BaseSettingItem(
+            title = item.title,
+            summary = item.selectedOption.title,
+            isEnabled = item.isEnabled,
+            onClick = { if (item.isEnabled) isDropdownExpanded = true }
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowDropDown,
+                contentDescription = "选择",
+                tint = MaterialTheme.colorScheme.primary
+            )
+        }
+
+        DropdownMenu(
+            expanded = isDropdownExpanded,
+            onDismissRequest = { isDropdownExpanded = false }
+        ) {
+            item.options.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(option.title) },
+                    onClick = {
+                        isDropdownExpanded = false
+                        onItemSelected(item.id, option.value)
+                    }
                 )
             }
         }
@@ -112,24 +210,16 @@ private fun ActionItemView(item: SettingItem.ActionItem, onClick: () -> Unit) {
 }
 
 @Composable
-private fun SwitchItemView(item: SettingItem.SwitchItem, onCheckedChange: (Boolean) -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(enabled = item.isEnabled) { onCheckedChange(!item.isChecked) }
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
+fun SwitchSettingItem(
+    item: SettingItem.SwitchItem,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    BaseSettingItem(
+        title = item.title,
+        summary = item.summary,
+        isEnabled = item.isEnabled,
+        onClick = { if (item.isEnabled) onCheckedChange(!item.isChecked) }
     ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(text = item.title, fontSize = 16.sp)
-            if (item.summary != null) {
-                Text(
-                    text = item.summary,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontSize = 14.sp
-                )
-            }
-        }
         Switch(
             checked = item.isChecked,
             onCheckedChange = onCheckedChange,
@@ -139,44 +229,53 @@ private fun SwitchItemView(item: SettingItem.SwitchItem, onCheckedChange: (Boole
 }
 
 @Composable
-private fun InfoItemView(item: SettingItem.InfoItem) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 18.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(text = item.title, fontSize = 16.sp)
-        Text(
-            text = item.value,
-            fontSize = 16.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
+fun ActionSettingItem(item: SettingItem.ActionItem, onClick: () -> Unit) {
+    BaseSettingItem(
+        title = item.title,
+        summary = item.summary,
+        isEnabled = item.isEnabled,
+        onClick = onClick
+    )
 }
 
 @Composable
-private fun DisconnectButton(
-    state: DisconnectActionState,
+fun InfoSettingItem(item: SettingItem.InfoItem) {
+    BaseSettingItem(
+        title = item.title,
+        summary = item.value,
+        isEnabled = true,
+        onClick = {}
+    )
+}
+
+@Composable
+private fun BaseSettingItem(
+    title: String,
+    summary: String?,
+    isEnabled: Boolean,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    trailingContent: (@Composable () -> Unit)? = null
 ) {
-    Button(
-        onClick = onClick,
-        enabled = state.isEnabled,
-        modifier = modifier,
-        shape = MaterialTheme.shapes.medium,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.error,
-            contentColor = MaterialTheme.colorScheme.onError,
-            disabledContainerColor = Color.Gray
-        )
+    val titleColor = if (isEnabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+    val summaryColor = if (isEnabled) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f)
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(enabled = isEnabled, onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = state.title,
-            modifier = Modifier.padding(vertical = 8.dp),
-            fontSize = 16.sp
-        )
+        Column(modifier = Modifier.weight(1f)) {
+            Text(text = title, fontWeight = FontWeight.Medium, fontSize = 16.sp, color = titleColor)
+            if (summary != null) {
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(text = summary, fontSize = 14.sp, color = summaryColor)
+            }
+        }
+        if (trailingContent != null) {
+            Spacer(modifier = Modifier.width(16.dp))
+            trailingContent()
+        }
     }
 }

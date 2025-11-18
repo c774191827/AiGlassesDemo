@@ -45,12 +45,12 @@ android {
 }
 
 dependencies {
-
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
     ksp(libs.hilt.android.compiler)
-
     implementation(project(":lib_core"))
     coreLibraryDesugaring(libs.android.desugarJdkLibs)
+    implementation(libs.glasses.sdk)
+    implementation(libs.glasses.classic.bt)
 }

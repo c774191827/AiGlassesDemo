@@ -7,6 +7,11 @@ data class SettingUiState(
     val disconnectAction: DisconnectActionState = DisconnectActionState()
 )
 
+data class SelectOption<T>(
+    val value: T,
+    val title: String
+)
+
 @Stable
 data class DisconnectActionState(
     val title: String = "断开连接",
@@ -33,6 +38,15 @@ sealed interface SettingItem {
         val title: String,
         val value: String
     ) : SettingItem
+
+    data class DropdownItem<T>(
+        val id: String,
+        val title: String,
+        val selectedOption: SelectOption<T>,
+        val options: List<SelectOption<T>>,
+        val isEnabled: Boolean = true
+    ) : SettingItem
+
 
     data object Divider : SettingItem
 }

@@ -6,7 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.blankj.utilcode.util.ConvertUtils
 import com.blankj.utilcode.util.LogUtils
 import com.fission.wear.glasses.sdk.GlassesManage
-import com.fission.wear.glasses.sdk.data.model.AiContentType
+import com.fission.wear.glasses.sdk.data.dto.AiChatMessageDTO
+import com.fission.wear.glasses.sdk.data.dto.AiContentType
 import com.fission.wear.glasses.sdk.events.AiAssistantEvent
 import com.fission.wear.glasses.sdk.events.AudioStateEvent
 import com.fission.wear.glasses.sdk.events.CmdResultEvent
@@ -14,11 +15,11 @@ import com.lw.top.lib_core.data.local.entity.AiAssistantEntity
 import com.lw.top.lib_core.data.repository.AiAssistantRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.io.File
+import javax.inject.Inject
 
 @HiltViewModel
 class AiAssistantViewModel @Inject constructor(
@@ -60,8 +61,8 @@ class AiAssistantViewModel @Inject constructor(
             GlassesManage.eventFlow().collect { event ->
                 when (event) {
                     is AiAssistantEvent.AiAssistantResult -> {
-                        LogUtils.d("AiAssistantEvent.AiAssistantResult${event.result}")
-                        handleStreamingResult(event.result)
+                        LogUtils.d("AiAssistantEvent.AiAssistantResult${event.data}")
+                        handleStreamingResult(event.data)
                     }
 
                     is AudioStateEvent.StartRecording -> {//唤醒词后开始录音
@@ -69,7 +70,7 @@ class AiAssistantViewModel @Inject constructor(
                     }
 
                     is AudioStateEvent.ReceivingAudioData -> {//持续发送给大模型
-                        LogUtils.d("接收录音数据 ${event.byteArray.toByteArray()}")
+//                        LogUtils.d("接收录音数据 ${event.byteArray.toByteArray()}")
                     }
 
                     is AudioStateEvent.CancelRecording -> {
@@ -87,31 +88,32 @@ class AiAssistantViewModel @Inject constructor(
                         val file = File(path)
                         //调用大模型 识别图片。播报结果
                     }
+                    else -> {}
                 }
             }
         }
     }
 
 
-    private suspend fun handleStreamingResult(result: com.fission.wear.glasses.sdk.data.model.AiAssistantEntity) {
-        val questionText = anyToStringSafe(result.question)
-        val answerText = anyToStringSafe(result.answer)
-        if (questionText.isEmpty() && answerText.isEmpty() && !result.isFinished) return
+    private suspend fun handleStreamingResult(data: AiChatMessageDTO) {
+        val questionText = anyToStringSafe(data.question)
+        val answerText = anyToStringSafe(data.answer)
+        if (questionText.isEmpty() && answerText.isEmpty() && !data.isFinished) return
 
         currentMessage = if (currentMessage != null) {
             currentMessage!!.copy(
                 question = currentMessage!!.question + questionText,
                 answer = currentMessage!!.answer + answerText,
-                questionType = mapContentType(result.questionType),
-                answerType = mapContentType(result.answerType),
+                questionType = mapContentType(data.questionType),
+                answerType = mapContentType(data.answerType),
                 timestamp = currentMessage!!.timestamp
             )
         } else {
             AiAssistantEntity(
                 question = questionText,
-                questionType = mapContentType(result.questionType),
+                questionType = mapContentType(data.questionType),
                 answer = answerText,
-                answerType = mapContentType(result.answerType),
+                answerType = mapContentType(data.answerType),
                 timestamp = System.currentTimeMillis()
             )
         }
@@ -128,7 +130,7 @@ class AiAssistantViewModel @Inject constructor(
             messages = newList,
             streamingMessageId = currentMessage!!.hashCode().toLong()
         )
-        if (result.isFinished) {
+        if (data.isFinished) {
             if (currentMessage!!.question.isNotEmpty() || currentMessage!!.answer.isNotEmpty()) {
                 repository.insertMessage(currentMessage!!)
             }

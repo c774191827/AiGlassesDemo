@@ -3,10 +3,10 @@ package com.lw.top.lib_core.data.repository
 import com.lw.top.lib_core.data.local.dao.AiAssistantDao
 import com.lw.top.lib_core.data.local.entity.AiAssistantEntity
 import com.lw.top.lib_core.data.repository.base.BaseRepository
-import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 class AiAssistantRepository @Inject constructor(
     private val aiAssistantDao: AiAssistantDao

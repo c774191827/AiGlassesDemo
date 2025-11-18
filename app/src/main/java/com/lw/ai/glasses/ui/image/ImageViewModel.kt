@@ -8,7 +8,6 @@ import com.fission.wear.glasses.sdk.events.FileSyncEvent
 import com.lw.top.lib_core.data.local.entity.MediaFilesEntity
 import com.lw.top.lib_core.data.repository.PhotoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -16,6 +15,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class ImageViewModel @Inject constructor(

@@ -28,6 +28,7 @@ desugarJdkLibs = "2.0.4"
 rxjava3 = "3.1.6"
 rxandroid = "3.0.0"
 rxandroidble = "1.19.1"
+glasses="1.0.0"
 
 
 
@@ -93,6 +94,10 @@ android-desugarJdkLibs = { group = "com.android.tools", name = "desugar_jdk_libs
 rxjava3 = { group = "io.reactivex.rxjava3", name = "rxjava", version.ref = "rxjava3" }
 rxandroid = { group = "io.reactivex.rxjava3", name = "rxandroid", version.ref = "rxandroid" }
 rxandroidble = { group = "com.polidea.rxandroidble3", name = "rxandroidble", version.ref = "rxandroidble" }
+
+#glasses
+glasses-sdk = { group = "com.fission.wear.glasses", name = "sdk", version.ref = "glasses" }
+glasses-classic-bt = { group = "com.fission.wear.glasses", name = "classic-bt", version.ref = "glasses" }
 
 
 [plugins]

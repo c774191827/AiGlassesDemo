@@ -11,6 +11,7 @@ import com.fission.wear.glasses.sdk.config.BleComConfig
 import com.fission.wear.glasses.sdk.events.CmdResultEvent
 import com.fission.wear.glasses.sdk.events.ConnectionStateEvent
 import com.fission.wear.glasses.sdk.events.ScanStateEvent
+import com.lw.top.lib_core.data.datastore.BluetoothDataManager
 import com.polidea.rxandroidble3.exceptions.BleDisconnectedException
 import com.polidea.rxandroidble3.exceptions.BleGattException
 import com.polidea.rxandroidble3.scan.ScanFilter
@@ -27,7 +28,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val bluetoothDataManager: BluetoothDataManager
 ) : BaseViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState = _uiState.asStateFlow()
@@ -37,6 +39,14 @@ class HomeViewModel @Inject constructor(
 
 
     init {
+        viewModelScope.launch {
+            if (!bluetoothDataManager.getBluetoothAddress().isNullOrEmpty()) {
+                connectDevice(
+                    bluetoothDataManager.getBluetoothAddress()!!,
+                    bluetoothDataManager.getBluetoothName()!!
+                )
+            }
+        }
         checkAndRequestPermissions()
         observeGlassesEvents()
         updateFeatures()
@@ -64,7 +74,7 @@ class HomeViewModel @Inject constructor(
             permissions.add(Manifest.permission.BLUETOOTH_CONNECT)
         }
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S){
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
             permissions.add(Manifest.permission.ACCESS_FINE_LOCATION)
         }
 
@@ -86,7 +96,7 @@ class HomeViewModel @Inject constructor(
                         _uiState.update { state ->
                             state.copy(
                                 scannedDevices = state.scannedDevices
-                                    .plus(events.device)
+                                    .plus(events.data)
                                     .distinctBy { it.bleDevice.macAddress }
                                     .sortedByDescending { it.rssi }
                                     .filter {
@@ -125,14 +135,17 @@ class HomeViewModel @Inject constructor(
                                 connectionState = ConnectionState.CONNECTED,
                             )
                         }
-                        GlassesManage.getDevicePower()
+                        GlassesManage.getBatteryLevel()
                         GlassesManage.getMediaFileCount()
                         GlassesManage.connectAiAssistant()
                     }
 
                     is ConnectionStateEvent.Disconnected -> {
                         _uiState.update {
-                            it.copy(connectionState = ConnectionState.DISCONNECTED)
+                            it.copy(
+                                connectionState = ConnectionState.DISCONNECTED,
+                                batteryLevel = -1
+                            )
                         }
 
                         if (error is BleDisconnectedException || error is BleGattException) {
@@ -167,6 +180,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun startScanDevice() {
+        GlassesManage.initialize(context, 2)
         if (_uiState.value.isScanning) return
         GlassesManage.startScanBleDevices(
             context = context,
@@ -180,7 +194,11 @@ class HomeViewModel @Inject constructor(
     }
 
     fun connectDevice(mac: String, name: String) {
+        GlassesManage.initialize(context, 2)
         GlassesManage.connect(BleComConfig(context, mac))
+        viewModelScope.launch {
+            bluetoothDataManager.saveBluetoothDevice(mac, name)
+        }
         _uiState.update {
             it.copy(
                 connectedDeviceName = name,
