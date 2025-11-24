@@ -74,7 +74,8 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onNavigateToImage: () -> Unit,
     onNavigateToAssistant: () -> Unit,
-    onNavigateToSetting: () -> Unit
+    onNavigateToSetting: () -> Unit,
+    onNavigateToUpdate:()->Unit
 ) {
     var showScanningDevices by remember { mutableStateOf(false) }
     val uiState by viewModel.uiState.collectAsState()
@@ -150,8 +151,12 @@ fun HomeScreen(
                             Screen.Setting.route -> {
                                 onNavigateToSetting()
                             }
+                            Screen.Update.route->{
+                                onNavigateToUpdate()
+                            }
                             else -> {
                             }
+
                         }
                     }
                 )

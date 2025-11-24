@@ -52,5 +52,4 @@ dependencies {
     implementation(project(":lib_core"))
     coreLibraryDesugaring(libs.android.desugarJdkLibs)
     implementation(libs.glasses.sdk)
-    implementation(libs.glasses.classic.bt)
 }

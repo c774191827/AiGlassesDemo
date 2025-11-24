@@ -5,6 +5,7 @@ import androidx.compose.material.icons.filled.ImageSearch
 import androidx.compose.material.icons.filled.QuestionAnswer
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Sync
+import androidx.compose.material.icons.filled.SystemUpdate
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.polidea.rxandroidble3.scan.ScanResult
@@ -37,7 +38,8 @@ data class HomeUiState(
                 Feature(id = "ai_chat", name = "AI对话", icon = Icons.Default.QuestionAnswer, route = "assistant"),
                 Feature(id = "ai_vision", name = "AI识图", icon = Icons.Default.ImageSearch, route = "assistant"),
                 Feature(id = "ai_translate", name = "AI翻译", icon = Icons.Default.Translate, route = "ai_translate"),
-                Feature(id = "glasses_settings", name = "眼镜设置", icon = Icons.Default.Settings, route = "glasses_settings")
+                Feature(id = "glasses_settings", name = "眼镜设置", icon = Icons.Default.Settings, route = "glasses_settings"),
+                Feature(id = "ota_update", name = "固件升级", icon = Icons.Default.SystemUpdate, route = "ota_update")
             )
         }
     }

@@ -12,6 +12,7 @@ import com.lw.ai.glasses.ui.assistant.AiAssistantScreen
 import com.lw.ai.glasses.ui.home.HomeScreen
 import com.lw.ai.glasses.ui.image.ImageScreen
 import com.lw.ai.glasses.ui.setting.SettingScreen
+import com.lw.ai.glasses.ui.update.UpdateScreen
 
 @SuppressLint("RestrictedApi", "UnrememberedGetBackStackEntry")
 @ExperimentalMaterial3Api
@@ -45,7 +46,11 @@ fun AppNavHost() {
                 },
                 onNavigateToSetting = {
                     navController.navigate(Screen.Setting.route)
+                },
+                onNavigateToUpdate = {
+                    navController.navigate(Screen.Update.route)
                 }
+
             )
         }
 
@@ -63,6 +68,11 @@ fun AppNavHost() {
 
         composable(Screen.Setting.route) {
             SettingScreen(onNavigateBack = {
+                navController.popBackStack()
+            })
+        }
+        composable(Screen.Update.route) {
+            UpdateScreen(onNavigateBack = {
                 navController.popBackStack()
             })
         }

@@ -1,0 +1,139 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.fission.wear.glasses",
+    "module": "sdk",
+    "version": "1.0.1",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.13"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseVariantReleaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "io.ktor",
+          "module": "ktor-client-core",
+          "version": {
+            "requires": "2.3.0"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-client-cio",
+          "version": {
+            "requires": "2.3.0"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-client-websockets",
+          "version": {
+            "requires": "2.3.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.1.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "sdk-1.0.1.aar",
+          "url": "sdk-1.0.1.aar",
+          "size": 1542768,
+          "sha512": "90948ad9327f9ec19d5705a9f0f2a13ef1768eebdcc7469cd736e62a6e2f90931a3bb9634a0f7e57ef85fc2ca5cac7aa25c2f945a983fc2cdaf95053a55c19e9",
+          "sha256": "5897715b8b859495056492e060b6579f98f629d081c316cfb3b46eefaf7f4da5",
+          "sha1": "d520bd927dcf8f0b7a90ea8343639bf22bc45a7c",
+          "md5": "a98ba1550efd1b2a2cf875f3c996ade7"
+        }
+      ]
+    },
+    {
+      "name": "releaseVariantReleaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "androidx.core",
+          "module": "core-ktx",
+          "version": {
+            "requires": "1.16.0"
+          }
+        },
+        {
+          "group": "androidx.appcompat",
+          "module": "appcompat",
+          "version": {
+            "requires": "1.7.1"
+          }
+        },
+        {
+          "group": "com.google.android.material",
+          "module": "material",
+          "version": {
+            "requires": "1.12.0"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-client-core",
+          "version": {
+            "requires": "2.3.0"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-client-cio",
+          "version": {
+            "requires": "2.3.0"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-client-websockets",
+          "version": {
+            "requires": "2.3.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.1.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "sdk-1.0.1.aar",
+          "url": "sdk-1.0.1.aar",
+          "size": 1542768,
+          "sha512": "90948ad9327f9ec19d5705a9f0f2a13ef1768eebdcc7469cd736e62a6e2f90931a3bb9634a0f7e57ef85fc2ca5cac7aa25c2f945a983fc2cdaf95053a55c19e9",
+          "sha256": "5897715b8b859495056492e060b6579f98f629d081c316cfb3b46eefaf7f4da5",
+          "sha1": "d520bd927dcf8f0b7a90ea8343639bf22bc45a7c",
+          "md5": "a98ba1550efd1b2a2cf875f3c996ade7"
+        }
+      ]
+    }
+  ]
+}

@@ -136,8 +136,8 @@ class HomeViewModel @Inject constructor(
                             )
                         }
                         GlassesManage.getBatteryLevel()
-                        GlassesManage.getMediaFileCount()
-                        GlassesManage.connectAiAssistant()
+//                        GlassesManage.getMediaFileCount()
+//                        GlassesManage.connectAiAssistant()
                     }
 
                     is ConnectionStateEvent.Disconnected -> {
@@ -183,7 +183,6 @@ class HomeViewModel @Inject constructor(
         GlassesManage.initialize(context, 2)
         if (_uiState.value.isScanning) return
         GlassesManage.startScanBleDevices(
-            context = context,
             bleScanConfig = null,
             scanSettings = ScanSettings.Builder()
                 .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
