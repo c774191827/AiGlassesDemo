@@ -11,6 +11,7 @@
 - [6. 同步文件](#6-同步文件)
 - [7. AI 助手功能](#7-ai-助手功能)
 - [8. SDK Flow 流监听](#8-sdk-flow-流监听)
+- [9. 眼镜设置功能](#9-眼镜设置功能)
 - [10. OTA 升级](#10-ota-升级)
 - [11. 错误码说明](#11-错误码说明)
 
@@ -39,7 +40,7 @@ implementation("io.reactivex.rxjava3:rxjava:3.1.6")
 ```
 
 必需依赖项：
-- settings.gradle 添加： maven { url = uri("https://repo.repsy.io/mvn/linwear/android") }，
+- settings.gradle 添加： maven { url = uri("https://repo.repsy.io/mvn/linwear/android") }
 - RxJava3
 - RxAndroid
 - RxAndroidBle
@@ -125,6 +126,17 @@ GlassesManage.connectAiAssistant()
 - `Failed`：错误
 
 ---
+### **⑥ OTA 升级 - OTAEvent**
+- `Start`：开始升级
+- `Progress`：升级进度
+- `Success`：升级成功
+- `Failed`：升级失败
+- `Cancelled`：升级已取消
+- `Idle`：空闲状态
+- `DeviceRebooting`：设备重启中
+
+---
+
 
 ## **9. 眼镜设置功能**
 SDK 提供了读取和修改眼镜多种参数的功能，如 LED 亮度、手势快捷方式、佩戴检测等。
@@ -144,9 +156,6 @@ SDK 提供了读取和修改眼镜多种参数的功能，如 LED 亮度、手�
 - `orientation` (屏幕方向)
 
 ### **② 修改单项设备设置**
-以下方法用于分别设置眼镜的特定参数。修改成功后，通常会触发一次 `DeviceSettingsStateEvent` 回调，返回更新后的所有设备状态。
-
-示例：
 ```kotlin
 GlassesManage.setLedBrightness(level: Int)
 GlassesManage.setWearDetection(enabled: Boolean)
@@ -168,9 +177,11 @@ fun startOTA(firmwareFilePath: String, otaType: GlassesConstant.OtaType)
 ---
 
 ## **11. 错误码说明**
+
+### ⚠️ SDK 基础错误（1000 ~ 1001）
 | 错误码 | 名称 | 描述 |
 |:-------:|:------|:------|
-| **1001** | ERROR_CODE_SDK_NOT_INITIALIZED | SDK 未初始化 |
+| 1001 | ERROR_CODE_SDK_NOT_INITIALIZED | SDK 未初始化 |
 
 ### 🖼️ 图片传输错误（2001 - 2011）
 | 错误码 | 名称 | 描述 |
@@ -205,3 +216,4 @@ fun startOTA(firmwareFilePath: String, otaType: GlassesConstant.OtaType)
 | 3105 | ERROR_CODE_DOWNLOAD_DELETE | 文件删除失败 |
 
 > OTA 错误码说明请参考：[**官方文档 OTA 错误码**](https://doc.zh-jieli.com/Apps/Android/ota/zh-cn/master/development/interface_desc.html#id7)
+
