@@ -11,8 +11,8 @@
 - [6. 同步文件](#6-同步文件)
 - [7. AI 助手功能](#7-ai-助手功能)
 - [8. SDK Flow 流监听](#8-sdk-flow-流监听)
-- [9. 眼镜设置功能](#9-眼镜设置功能)
-- [10. 错误码说明](#10-错误码说明)
+- [10. OTA 升级](#10-ota-升级)
+- [11. 错误码说明](#11-错误码说明)
 
 ---
 
@@ -160,7 +160,14 @@ GlassesManage.getDeviceVersionInfo()
 
 ---
 
-## **10. 错误码说明**
+## **10. OTA 升级**
+- 方法：
+```kotlin
+fun startOTA(firmwareFilePath: String, otaType: GlassesConstant.OtaType)
+```
+---
+
+## **11. 错误码说明**
 | 错误码 | 名称 | 描述 |
 |:-------:|:------|:------|
 | **1001** | ERROR_CODE_SDK_NOT_INITIALIZED | SDK 未初始化 |
@@ -196,3 +203,5 @@ GlassesManage.getDeviceVersionInfo()
 | 3103 | ERROR_CODE_DOWNLOAD_FAILED | 文件下载失败 |
 | 3104 | ERROR_CODE_DOWNLOAD_NETWORK_ERROR | 网络错误 |
 | 3105 | ERROR_CODE_DOWNLOAD_DELETE | 文件删除失败 |
+
+> OTA 错误码说明请参考：[**官方文档 OTA 错误码**](https://doc.zh-jieli.com/Apps/Android/ota/zh-cn/master/development/interface_desc.html#id7)
