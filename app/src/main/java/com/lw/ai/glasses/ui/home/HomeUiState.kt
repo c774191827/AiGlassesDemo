@@ -21,10 +21,11 @@ data class HomeUiState(
     val isScanning: Boolean = false,
     val connectionState: ConnectionState = ConnectionState.DISCONNECTED,
     val batteryLevel: Int = -1,
+    val isCharging: Boolean? = null,
     val connectedDeviceName: String? = null,
     val pendingSyncPhotosCount: Int = 0,
     val features: List<Feature> = emptyList()
-){
+) {
     companion object {
         fun initialFeatures(pendingSyncPhotosCount: Int): List<Feature> {
             return listOf(
@@ -35,11 +36,36 @@ data class HomeUiState(
                     route = "sync_photos",
                     badgeCount = pendingSyncPhotosCount
                 ),
-                Feature(id = "ai_chat", name = "AI对话", icon = Icons.Default.QuestionAnswer, route = "assistant"),
-                Feature(id = "ai_vision", name = "AI识图", icon = Icons.Default.ImageSearch, route = "assistant"),
-                Feature(id = "ai_translate", name = "AI翻译", icon = Icons.Default.Translate, route = "ai_translate"),
-                Feature(id = "glasses_settings", name = "眼镜设置", icon = Icons.Default.Settings, route = "glasses_settings"),
-                Feature(id = "ota_update", name = "固件升级", icon = Icons.Default.SystemUpdate, route = "ota_update")
+                Feature(
+                    id = "ai_chat",
+                    name = "AI对话",
+                    icon = Icons.Default.QuestionAnswer,
+                    route = "assistant"
+                ),
+                Feature(
+                    id = "ai_vision",
+                    name = "AI识图",
+                    icon = Icons.Default.ImageSearch,
+                    route = "assistant"
+                ),
+                Feature(
+                    id = "ai_translate",
+                    name = "AI翻译",
+                    icon = Icons.Default.Translate,
+                    route = "ai_translate"
+                ),
+                Feature(
+                    id = "glasses_settings",
+                    name = "眼镜设置",
+                    icon = Icons.Default.Settings,
+                    route = "glasses_settings"
+                ),
+                Feature(
+                    id = "ota_update",
+                    name = "固件升级",
+                    icon = Icons.Default.SystemUpdate,
+                    route = "ota_update"
+                )
             )
         }
     }

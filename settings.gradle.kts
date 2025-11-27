@@ -16,7 +16,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven { url = uri("repo") }
+        maven { url = uri("https://repo.repsy.io/mvn/linwear/android") }
     }
 }
 

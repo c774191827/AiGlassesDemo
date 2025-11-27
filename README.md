@@ -34,11 +34,12 @@
 直接集成方式：
 
 ```gradle
+implementation("com.fission.wear.glasses:sdk:1.0.2")
 implementation("io.reactivex.rxjava3:rxjava:3.1.6")
 ```
 
 必需依赖项：
-- 复制repo包到项目根目录参考demo配置glasses-sdk,glasses-classic-bt（settings.gradle 添加本地仓库： maven { url = uri("repo") } 后续会迁移到在线依赖），
+- settings.gradle 添加： maven { url = uri("https://repo.repsy.io/mvn/linwear/android") }，
 - RxJava3
 - RxAndroid
 - RxAndroidBle

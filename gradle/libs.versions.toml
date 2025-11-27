@@ -28,7 +28,8 @@ desugarJdkLibs = "2.0.4"
 rxjava3 = "3.1.6"
 rxandroid = "3.0.0"
 rxandroidble = "1.19.1"
-glasses="1.0.1"
+glasses="1.0.2"
+media3 = "1.3.1"
 
 
 
@@ -56,6 +57,9 @@ androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtim
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation-compose" }
 androidx-compose-animation = { group = "androidx.compose.animation", name = "animation" }
 androidx-datastore-preferences={group="androidx.datastore",name="datastore-preferences",version.ref="preferences"}
+androidx-media3-common = { group = "androidx.media3", name = "media3-common", version.ref = "media3" }
+androidx-media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3" }
+androidx-media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "media3" }
 
 #Hilt
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
@@ -81,6 +85,7 @@ utilcodex = { group = "com.blankj", name = "utilcodex", version.ref = "utilcodex
 #coil
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
+coil-video = { group = "io.coil-kt.coil3", name = "coil-video", version.ref = "coil" }
 
 #web
 webkit = { group = "androidx.webkit", name = "webkit", version.ref = "webkit" }
@@ -109,4 +114,5 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize" }
 
 [bundles]
-coil = ["coil-compose", "coil-network-okhttp"]
+coil = ["coil-compose", "coil-network-okhttp","coil-video"]
+media3 = ["androidx-media3-common", "androidx-media3-exoplayer", "androidx-media3-ui"]

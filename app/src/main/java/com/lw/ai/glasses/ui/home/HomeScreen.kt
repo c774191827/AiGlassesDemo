@@ -39,6 +39,7 @@ import androidx.compose.material.icons.filled.Battery5Bar
 import androidx.compose.material.icons.filled.Battery6Bar
 import androidx.compose.material.icons.filled.BatteryAlert
 import androidx.compose.material.icons.filled.BatteryFull
+import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -113,7 +114,8 @@ fun HomeScreen(
             DeviceStatus(
                 deviceName = uiState.connectedDeviceName,
                 connectionState = uiState.connectionState,
-                batteryLevel = uiState.batteryLevel
+                batteryLevel = uiState.batteryLevel,
+                isCharging = uiState.isCharging
             )
 
             CompositionLocalProvider(LocalContentColor provides Color.Black) {
@@ -269,7 +271,8 @@ fun ScannedDeviceItem(
 fun DeviceStatus(
     deviceName: String?,
     connectionState: ConnectionState,
-    batteryLevel: Int
+    batteryLevel: Int,
+    isCharging: Boolean?
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Column(horizontalAlignment = Alignment.End) {
@@ -293,6 +296,7 @@ fun DeviceStatus(
                 color = statusColor
             )
         }
+
         Icon(
             imageVector = getBatteryIcon(batteryLevel),
             contentDescription = "电量",
@@ -300,28 +304,29 @@ fun DeviceStatus(
                 .padding(start = 8.dp)
                 .size(20.dp),
             tint = when (batteryLevel) {
-                in 90..100 -> {
-                    Color.Green
-                }
-
-                in 60..89 -> {
-                    Color.Yellow
-                }
-
-                in 20..59 -> {
-                    Color.Gray
-                }
-
-                else -> {
-                    Color.Red
-                }
+                in 90..100 -> Color.Green
+                in 60..89 -> Color.Yellow
+                in 20..59 -> Color.Gray
+                else -> Color.Red
             }
         )
+
+        if (isCharging == true) {
+            Icon(
+                imageVector = Icons.Default.Bolt, // 使用闪电图标
+                contentDescription = "正在充电",
+                modifier = Modifier
+                    .size(16.dp),
+                tint = Color.Green
+            )
+        }
+
         if (batteryLevel != -1) {
             Text(
                 text = "$batteryLevel%",
                 style = MaterialTheme.typography.bodySmall,
-                color = Color.Black
+                color = if (isCharging == true) Color.Green else Color.Black,
+                modifier = Modifier.padding(start = 2.dp)
             )
         }
     }

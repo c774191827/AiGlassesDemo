@@ -136,8 +136,8 @@ class HomeViewModel @Inject constructor(
                             )
                         }
                         GlassesManage.getBatteryLevel()
-//                        GlassesManage.getMediaFileCount()
-//                        GlassesManage.connectAiAssistant()
+                        GlassesManage.getMediaFileCount()
+                        GlassesManage.connectAiAssistant()
                     }
 
                     is ConnectionStateEvent.Disconnected -> {
@@ -162,6 +162,7 @@ class HomeViewModel @Inject constructor(
                         _uiState.update {
                             it.copy(
                                 batteryLevel = events.value ?: 0,
+                                isCharging = events.isCharging
                             )
                         }
                     }
@@ -194,6 +195,7 @@ class HomeViewModel @Inject constructor(
 
     fun connectDevice(mac: String, name: String) {
         GlassesManage.initialize(context, 2)
+        GlassesManage.stopScanBleDevices(context)
         GlassesManage.connect(BleComConfig(context, mac))
         viewModelScope.launch {
             bluetoothDataManager.saveBluetoothDevice(mac, name)

@@ -96,6 +96,7 @@ dependencies {
 
     //coil
     api(libs.bundles.coil)
+    api(libs.bundles.media3)
 
     //preferences
     api(libs.androidx.datastore.preferences)

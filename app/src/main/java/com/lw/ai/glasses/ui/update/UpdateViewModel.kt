@@ -165,7 +165,7 @@ class UpdateViewModel @Inject constructor(
             GlassesManage.eventFlow().collect { events ->
                 _uiState.update { currentState ->
                     when (events) {
-                       is OTAEvent.Start -> currentState.copy(
+                        is OTAEvent.Start -> currentState.copy(
                             otaStatus = OtaStatus.UPGRADING,
                             statusText = "升级开始...",
                             progress = 0
@@ -188,18 +188,19 @@ class UpdateViewModel @Inject constructor(
                             progress = 100
                         )
 
+
                         is OTAEvent.Failed -> currentState.copy(
                             otaStatus = OtaStatus.FAILED,
                             statusText = "升级失败: ${events.reason}"
                         )
 
-                       is OTAEvent.Cancelled -> currentState.copy(
+                        is OTAEvent.Cancelled -> currentState.copy(
                             otaStatus = OtaStatus.IDLE,
                             statusText = "升级已取消",
                             progress = 0
                         )
 
-                       is OTAEvent.Idle -> currentState.copy(
+                        is OTAEvent.Idle -> currentState.copy(
                             otaStatus = OtaStatus.IDLE,
                             statusText = "空闲状态",
                             progress = 0

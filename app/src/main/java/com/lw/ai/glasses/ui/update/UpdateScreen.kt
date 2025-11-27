@@ -158,7 +158,7 @@ private fun StatusCard(statusText: String, otaStatus: OtaStatus, progress: Int) 
                 Column {
                     Spacer(Modifier.height(12.dp))
                     LinearProgressIndicator(
-                        progress = { progress / 100f },
+                        progress = progress / 100f,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }

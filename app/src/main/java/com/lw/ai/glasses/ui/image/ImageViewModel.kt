@@ -8,6 +8,7 @@ import com.fission.wear.glasses.sdk.events.FileSyncEvent
 import com.lw.top.lib_core.data.local.entity.MediaFilesEntity
 import com.lw.top.lib_core.data.repository.PhotoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +16,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class ImageViewModel @Inject constructor(
@@ -23,14 +23,24 @@ class ImageViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     private val _syncState = MutableStateFlow(SyncState())
+    private val _uiEvents = MutableStateFlow<ImageUiEvent>(ImageUiEvent.None)
 
     val uiState: StateFlow<ImageUiState> = combine(
         photoRepository.getSyncedPhotosFlow(),
-        _syncState
-    ) { photos, syncState ->
+        _syncState,
+        _uiEvents
+    ) { photos, syncState, event ->
+        val currentSelected = uiState.value.selectedImageForZoom
+        val newSelectedImage = when (event) {
+            is ImageUiEvent.SelectImage -> event.image
+            is ImageUiEvent.DismissImage -> null
+            ImageUiEvent.None -> currentSelected
+        }
+
         ImageUiState(
             images = photos,
-            syncState = syncState
+            syncState = syncState,
+            selectedImageForZoom = newSelectedImage
         )
     }.stateIn(
         scope = viewModelScope,
@@ -40,6 +50,13 @@ class ImageViewModel @Inject constructor(
 
     init {
         observeGlassesEvents()
+    }
+
+    fun onEvent(event: ImageUiEvent) {
+        _uiEvents.value = event
+        if (event is ImageUiEvent.SelectImage || event is ImageUiEvent.DismissImage) {
+            _uiEvents.value = ImageUiEvent.None
+        }
     }
 
 
@@ -72,7 +89,8 @@ class ImageViewModel @Inject constructor(
                             it.copy(
                                 syncProgress = events.progress / 100f,
                                 currentFileIndex = events.curFileIndex,
-                                totalFilesToSync = events.totalFileCount
+                                totalFilesToSync = events.totalFileCount,
+                                speed = events.speed,
                             )
                         }
                     }
@@ -82,7 +100,7 @@ class ImageViewModel @Inject constructor(
                             filePath = events.filePath,
                             type = "IMAGE",
                             createdAt = System.currentTimeMillis(),
-                            size = 10000,
+                            size = events.fileSizeInBytes,
                         )
                         photoRepository.insertPhoto(newFileEntity)
                         val isLastFile = (events.curFileIndex + 1) == events.totalFileCount
