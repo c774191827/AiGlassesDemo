@@ -3,6 +3,7 @@ package com.lw.top.lib_core.data.local.database
 import android.content.Context
 import com.lw.top.lib_core.data.local.dao.AiAssistantDao
 import com.lw.top.lib_core.data.local.dao.MediaFilesDao
+import com.lw.top.lib_core.data.local.dao.TranslationDao
 import com.lw.top.lib_core.data.local.dao.UsersDao
 import dagger.Module
 import dagger.Provides
@@ -33,5 +34,10 @@ object DatabaseModule {
     @Provides
     fun provideAiAssistantDao(appDatabase: AppDatabase): AiAssistantDao {
         return appDatabase.aiAssistantDao()
+    }
+
+    @Provides
+    fun provideTranslationDao(database: AppDatabase): TranslationDao {
+        return database.translationDao()
     }
 }

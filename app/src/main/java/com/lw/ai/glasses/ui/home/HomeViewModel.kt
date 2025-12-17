@@ -3,11 +3,14 @@ package com.lw.ai.glasses.ui.home
 import BaseViewModel
 import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewModelScope
 import com.blankj.utilcode.util.ToastUtils
 import com.fission.wear.glasses.sdk.GlassesManage
 import com.fission.wear.glasses.sdk.config.BleComConfig
+import com.fission.wear.glasses.sdk.config.BleScanConfig
 import com.fission.wear.glasses.sdk.events.CmdResultEvent
 import com.fission.wear.glasses.sdk.events.ConnectionStateEvent
 import com.fission.wear.glasses.sdk.events.ScanStateEvent
@@ -31,25 +34,101 @@ class HomeViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val bluetoothDataManager: BluetoothDataManager
 ) : BaseViewModel() {
+
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState = _uiState.asStateFlow()
 
     private val _permissionEvent = MutableSharedFlow<List<String>>(replay = 1)
     val permissionEvent = _permissionEvent.asSharedFlow()
 
+    private val _requestAudioPermissionEvent = MutableSharedFlow<Unit>()
+    val requestAudioPermissionEvent = _requestAudioPermissionEvent.asSharedFlow()
+
+    private val _navigationEvent = MutableSharedFlow<String>()
+    val navigationEvent = _navigationEvent.asSharedFlow()
 
     init {
         viewModelScope.launch {
-            if (!bluetoothDataManager.getBluetoothAddress().isNullOrEmpty()) {
-                connectDevice(
-                    bluetoothDataManager.getBluetoothAddress()!!,
-                    bluetoothDataManager.getBluetoothName()!!
-                )
+            bluetoothDataManager.savedBluetoothState.collect { stateInt ->
+                val newState =
+                    ConnectionState.entries.find { it.value == stateInt } ?: ConnectionState.IDLE
+
+                if (newState == ConnectionState.IDLE) {
+                    _uiState.update {
+                        it.copy(
+                            connectionState = ConnectionState.IDLE,
+                        )
+                    }
+                } else {
+                    val currentUiState = _uiState.value.connectionState
+                    if (currentUiState == ConnectionState.IDLE || currentUiState == ConnectionState.DISCONNECTED) {
+                        _uiState.update { it.copy(connectionState = newState) }
+                    }
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            val connectionState =
+                ConnectionState.fromValue(bluetoothDataManager.getBluetoothState())
+            if (connectionState != ConnectionState.IDLE) {
+                if (!bluetoothDataManager.getBluetoothAddress().isNullOrEmpty()) {
+                    connectDevice(
+                        bluetoothDataManager.getBluetoothAddress()!!,
+                        bluetoothDataManager.getBluetoothName()!!
+                    )
+                    _uiState.update {
+                        it.copy(
+                            connectedDeviceName = bluetoothDataManager.getBluetoothName()!!
+                        )
+                    }
+                }
             }
         }
         checkAndRequestPermissions()
         observeGlassesEvents()
         updateFeatures()
+    }
+
+    fun onFeatureClick(feature: Feature) {
+        when (feature.id) {
+            "ai_translate" -> {
+                checkAudioPermissionAndNavigate(feature.route)
+            }
+
+            else -> {
+                viewModelScope.launch {
+                    _navigationEvent.emit(feature.route)
+                }
+            }
+        }
+    }
+
+    private fun checkAudioPermissionAndNavigate(route: String) {
+        val hasAudioPermission = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.RECORD_AUDIO
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (hasAudioPermission) {
+            viewModelScope.launch {
+                _navigationEvent.emit(route)
+            }
+        } else {
+            viewModelScope.launch {
+                _requestAudioPermissionEvent.emit(Unit)
+            }
+        }
+    }
+
+    fun onRecordAudioPermissionResult(isGranted: Boolean) {
+        if (isGranted) {
+            viewModelScope.launch {
+                _navigationEvent.emit("ai_translate")
+            }
+        } else {
+            ToastUtils.showLong("需要录音权限才能使用翻译功能")
+        }
     }
 
     private fun checkAndRequestPermissions() {
@@ -69,7 +148,7 @@ class HomeViewModel @Inject constructor(
 
     private fun getPermissionsToRequest(): List<String> {
         val permissions = mutableListOf<String>()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {//部分国产手机可能需要加上位置权限
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             permissions.add(Manifest.permission.BLUETOOTH_SCAN)
             permissions.add(Manifest.permission.BLUETOOTH_CONNECT)
         }
@@ -122,6 +201,11 @@ class HomeViewModel @Inject constructor(
                     }
 
                     is ConnectionStateEvent.Connecting -> {
+
+                        viewModelScope.launch {
+                            bluetoothDataManager.saveBluetoothState(ConnectionState.CONNECTING.value)
+                        }
+
                         _uiState.update {
                             it.copy(
                                 connectionState = ConnectionState.CONNECTING,
@@ -135,9 +219,13 @@ class HomeViewModel @Inject constructor(
                                 connectionState = ConnectionState.CONNECTED,
                             )
                         }
+                        viewModelScope.launch {
+                            bluetoothDataManager.saveBluetoothState(ConnectionState.CONNECTED.value)
+                        }
                         GlassesManage.getBatteryLevel()
                         GlassesManage.getMediaFileCount()
-                        GlassesManage.connectAiAssistant()
+                        GlassesManage.connectAiAssistant(bluetoothDataManager.getBluetoothAddress()!!,bluetoothDataManager.getBluetoothName()!!,
+                            "6600","ukuSPzMnpLvLS2TTLL9S8PvUJzfTCHnu","tz5dgRLm6tXS8gRr")
                     }
 
                     is ConnectionStateEvent.Disconnected -> {
@@ -152,10 +240,11 @@ class HomeViewModel @Inject constructor(
                             _uiState.update {
                                 it.copy(connectionState = ConnectionState.DISCONNECTED)
                             }
-                        } else {
-
                         }
 
+                        viewModelScope.launch {
+                            bluetoothDataManager.saveBluetoothState(ConnectionState.DISCONNECTED.value)
+                        }
                     }
 
                     is CmdResultEvent.DevicePower -> {
@@ -172,9 +261,7 @@ class HomeViewModel @Inject constructor(
                         updateFeatures()
                     }
 
-                    else -> {
-
-                    }
+                    else -> {}
                 }
             }
         }
@@ -184,7 +271,7 @@ class HomeViewModel @Inject constructor(
         GlassesManage.initialize(context, 2)
         if (_uiState.value.isScanning) return
         GlassesManage.startScanBleDevices(
-            bleScanConfig = null,
+            bleScanConfig = BleScanConfig(isContinuousScan = false, scanDuration = 120000),
             scanSettings = ScanSettings.Builder()
                 .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
                 .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
@@ -196,15 +283,30 @@ class HomeViewModel @Inject constructor(
     fun connectDevice(mac: String, name: String) {
         GlassesManage.initialize(context, 2)
         GlassesManage.stopScanBleDevices(context)
-        GlassesManage.connect(BleComConfig(context, mac))
+        if (mac.isEmpty()) {
+            viewModelScope.launch {
+                if (!bluetoothDataManager.getBluetoothAddress().isNullOrEmpty()) {
+                    connectDevice(
+                        bluetoothDataManager.getBluetoothAddress()!!,
+                        bluetoothDataManager.getBluetoothName()!!
+                    )
+                }
+            }
+        } else {
+            GlassesManage.connect(BleComConfig(context, mac))
+            viewModelScope.launch {
+                bluetoothDataManager.saveBluetoothDevice(mac, name)
+            }
+        }
+
         viewModelScope.launch {
-            bluetoothDataManager.saveBluetoothDevice(mac, name)
+            _uiState.update {
+                it.copy(
+                    connectedDeviceName = name.ifEmpty { bluetoothDataManager.getBluetoothName()!!},
+                )
+            }
         }
-        _uiState.update {
-            it.copy(
-                connectedDeviceName = name,
-            )
-        }
+
     }
 
     private fun updateFeatures() {
@@ -214,5 +316,4 @@ class HomeViewModel @Inject constructor(
             )
         }
     }
-
 }

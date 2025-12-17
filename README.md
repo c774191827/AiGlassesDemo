@@ -10,10 +10,12 @@
 - [5. 连接设备](#5-连接设备)
 - [6. 同步文件](#6-同步文件)
 - [7. AI 助手功能](#7-ai-助手功能)
-- [8. SDK Flow 流监听](#8-sdk-flow-流监听)
-- [9. 眼镜设置功能](#9-眼镜设置功能)
-- [10. OTA 升级](#10-ota-升级)
-- [11. 错误码说明](#11-错误码说明)
+- [8. AI 翻译](#8-ai-翻译)
+- [9. 直播](#9-直播)
+- [10. SDK Flow 流监听](#10-sdk-flow-流监听)
+- [11. 眼镜设置功能](#11-眼镜设置功能)
+- [12. OTA 升级](#12-ota-升级)
+- [13. 错误码说明](#13-错误码说明)
 
 ---
 
@@ -101,7 +103,20 @@ GlassesManage.connectAiAssistant()
 
 ---
 
-## **8. SDK Flow 流监听**
+## **8. AI 翻译**
+请参考Demo中translate 实现流程
+- **startAiTranslation(fromLanguage: Int, toLanguageList: List<Int>)**：初始化需要翻译的语音
+- **startReceivingAudio(mode: String,language: Int)**：切换AI助手为翻译模式
+- **sendReceivingAudioData(byteArray: ByteArray)**：发送录音数据。录音数据参数必须设置为频率16000，pcm流
+- **stopReceivingAudio(mode: String)**：停止录音后 必须发送stop
+- **翻译回调查看flow流，翻译Event部分**
+
+
+## **9. 直播**
+
+
+
+## **10. SDK Flow 流监听**
 ### **① 搜索设备 - ScanStateEvent**
 - `DeviceFound`：返回 `ScanResult`
 - `ScanFinished`：扫描完成
@@ -124,9 +139,14 @@ GlassesManage.connectAiAssistant()
 ### **⑤ AI 助手 - AiAssistantEvent**
 - `AiAssistantResult`：大模型返回结果
 - `Failed`：错误
+---
+
+### **⑥ AI 翻译 - AiTranslationEvent**
+- `AiTranslationResult`：大模型返回翻译结果
+- `Failed`：错误
 
 ---
-### **⑥ OTA 升级 - OTAEvent**
+### **⑦ OTA 升级 - OTAEvent**
 - `Start`：开始升级
 - `Progress`：升级进度
 - `Success`：升级成功
@@ -138,7 +158,7 @@ GlassesManage.connectAiAssistant()
 ---
 
 
-## **9. 眼镜设置功能**
+## **11. 眼镜设置功能**
 SDK 提供了读取和修改眼镜多种参数的功能，如 LED 亮度、手势快捷方式、佩戴检测等。
 
 ### **① 获取所有设备设置**
@@ -157,9 +177,9 @@ SDK 提供了读取和修改眼镜多种参数的功能，如 LED 亮度、手�
 
 ### **② 修改单项设备设置**
 ```kotlin
-GlassesManage.setLedBrightness(level: Int)
-GlassesManage.setWearDetection(enabled: Boolean)
-GlassesManage.setGestureAction(gestureId: Int, action: Int)
+GlassesManage.setLedBrightness()
+GlassesManage.setWearDetection()
+GlassesManage.setGestureAction()
 ```
 
 ### **③ 获取设备版本信息**
@@ -169,14 +189,14 @@ GlassesManage.getDeviceVersionInfo()
 
 ---
 
-## **10. OTA 升级**
+## **12. OTA 升级**
 - 方法：
 ```kotlin
 fun startOTA(firmwareFilePath: String, otaType: GlassesConstant.OtaType)
 ```
 ---
 
-## **11. 错误码说明**
+## **13. 错误码说明**
 
 ### ⚠️ SDK 基础错误（1000 ~ 1001）
 | 错误码 | 名称 | 描述 |

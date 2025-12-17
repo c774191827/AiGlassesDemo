@@ -1,7 +1,7 @@
 package com.lw.ai.glasses.ui.home
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ImageSearch
+import androidx.compose.material.icons.filled.LiveTv
 import androidx.compose.material.icons.filled.QuestionAnswer
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Sync
@@ -10,16 +10,23 @@ import androidx.compose.material.icons.filled.Translate
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.polidea.rxandroidble3.scan.ScanResult
 
-enum class ConnectionState {
-    DISCONNECTED,
-    CONNECTING,
-    CONNECTED
+enum class ConnectionState(val value: Int) {
+    IDLE(0),
+    CONNECTING(1),
+    CONNECTED(2),
+    DISCONNECTED(3);
+
+    companion object {
+        fun fromValue(value: Int): ConnectionState {
+            return entries.find { it.value == value } ?: IDLE
+        }
+    }
 }
 
 data class HomeUiState(
     val scannedDevices: List<ScanResult> = emptyList(),
     val isScanning: Boolean = false,
-    val connectionState: ConnectionState = ConnectionState.DISCONNECTED,
+    val connectionState: ConnectionState = ConnectionState.IDLE,
     val batteryLevel: Int = -1,
     val isCharging: Boolean? = null,
     val connectedDeviceName: String? = null,
@@ -38,14 +45,8 @@ data class HomeUiState(
                 ),
                 Feature(
                     id = "ai_chat",
-                    name = "AI对话",
+                    name = "AI对话/识图",
                     icon = Icons.Default.QuestionAnswer,
-                    route = "assistant"
-                ),
-                Feature(
-                    id = "ai_vision",
-                    name = "AI识图",
-                    icon = Icons.Default.ImageSearch,
                     route = "assistant"
                 ),
                 Feature(
@@ -53,6 +54,12 @@ data class HomeUiState(
                     name = "AI翻译",
                     icon = Icons.Default.Translate,
                     route = "ai_translate"
+                ),
+                Feature(
+                    id = "live_streaming",
+                    name = "直播",
+                    icon = Icons.Default.LiveTv,
+                    route = "live_streaming"
                 ),
                 Feature(
                     id = "glasses_settings",

@@ -1,6 +1,6 @@
 package com.lw.ai.glasses.ui.home
 
-import Screen
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -17,38 +17,35 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Battery2Bar
-import androidx.compose.material.icons.filled.Battery3Bar
-import androidx.compose.material.icons.filled.Battery4Bar
-import androidx.compose.material.icons.filled.Battery5Bar
-import androidx.compose.material.icons.filled.Battery6Bar
-import androidx.compose.material.icons.filled.BatteryAlert
 import androidx.compose.material.icons.filled.BatteryFull
+import androidx.compose.material.icons.filled.BatteryStd
+import androidx.compose.material.icons.filled.Bluetooth
+import androidx.compose.material.icons.filled.BluetoothDisabled
+import androidx.compose.material.icons.filled.BluetoothSearching
 import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material3.Badge
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -59,7 +56,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -68,18 +64,16 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.lw.ai.glasses.ui.base.screen.popup.CenteredFadeInPopup
 import com.polidea.rxandroidble3.scan.ScanResult
-
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = hiltViewModel(),
-    onNavigateToImage: () -> Unit,
-    onNavigateToAssistant: () -> Unit,
-    onNavigateToSetting: () -> Unit,
-    onNavigateToUpdate:()->Unit
+    onNavigate: (String) -> Unit,
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
-    var showScanningDevices by remember { mutableStateOf(false) }
     val uiState by viewModel.uiState.collectAsState()
+
+    var showScanningDevices by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -98,73 +92,59 @@ fun HomeScreen(
         }
     }
 
-    Box(
-        Modifier
-            .fillMaxSize()
-            .statusBarsPadding()
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
+    val audioPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        viewModel.onRecordAudioPermissionResult(isGranted)
+    }
 
-            DeviceStatus(
-                deviceName = uiState.connectedDeviceName,
-                connectionState = uiState.connectionState,
-                batteryLevel = uiState.batteryLevel,
-                isCharging = uiState.isCharging
+    val multiplePermissionsLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) {
+    }
+
+    LaunchedEffect(Unit) {
+        launch {
+            viewModel.requestAudioPermissionEvent.collect {
+                audioPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+            }
+        }
+        launch {
+            viewModel.navigationEvent.collect { route ->
+                onNavigate(route)
+            }
+        }
+        launch {
+            viewModel.permissionEvent.collect { permissions ->
+                multiplePermissionsLauncher.launch(permissions.toTypedArray())
+            }
+        }
+    }
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.background
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+        ) {
+            DeviceStatusCard(
+                uiState = uiState,
+                onConnectClick = {
+                    showScanningDevices = !showScanningDevices
+                    viewModel.startScanDevice()
+                },
+                onReconnectClick ={
+                    viewModel.connectDevice("","")
+                }
             )
 
-            CompositionLocalProvider(LocalContentColor provides Color.Black) {
-                IconButton(
-                    onClick = {
-                        showScanningDevices = !showScanningDevices
-                        viewModel.startScanDevice()
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "扫描设备"
-                    )
-                }
-            }
+            FeatureGrid(
+                features = uiState.features,
+                onFeatureClick = { viewModel.onFeatureClick(it) }
+            )
         }
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            contentPadding = PaddingValues(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.padding(top = 40.dp)
-        ) {
-            items(items = uiState.features, key = { it.id }) { feature ->
-                FeatureCard(
-                    feature = feature,
-                    onClick = {
-                        when (feature.route) {
-                            Screen.Image.route -> {
-                                onNavigateToImage()
-                            }
-                            Screen.Assistant.route -> {
-                                onNavigateToAssistant()
-                            }
-                            Screen.Setting.route -> {
-                                onNavigateToSetting()
-                            }
-                            Screen.Update.route->{
-                                onNavigateToUpdate()
-                            }
-                            else -> {
-                            }
-
-                        }
-                    }
-                )
-            }
-        }
-
     }
 
     CenteredFadeInPopup(
@@ -223,186 +203,298 @@ fun HomeScreen(
     }
 }
 
+
 @Composable
 fun ScannedDeviceItem(
     scanResult: ScanResult,
     onClick: () -> Unit
 ) {
-    val device = scanResult.bleDevice
-    val name = device.name ?: "未知设备"
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
-            .clickable { onClick() },
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            .clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
+                .padding(12.dp)
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Icon(
+                imageVector = Icons.Default.Bluetooth,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = name,
+                    text = scanResult.bleDevice.name ?: "Unknown Device",
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "MAC: ${device.macAddress}",
+                    text = scanResult.bleDevice.macAddress,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             Text(
-                text = "RSSI: ${scanResult.rssi}",
+                text = "${scanResult.rssi} dBm",
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
 }
 
-
 @Composable
-fun DeviceStatus(
-    deviceName: String?,
-    connectionState: ConnectionState,
-    batteryLevel: Int,
-    isCharging: Boolean?
+fun DeviceStatusCard(
+    uiState: HomeUiState,
+    onConnectClick: () -> Unit,
+    onReconnectClick: () -> Unit,
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Column(horizontalAlignment = Alignment.End) {
-            val deviceNameToDisplay = deviceName ?: "点击右侧+连接设备"
-            Text(
-                text = deviceNameToDisplay,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            val (statusText, statusColor) = when (connectionState) {
-                ConnectionState.CONNECTED -> "已连接" to MaterialTheme.colorScheme.primary
-                ConnectionState.CONNECTING -> "正在连接..." to Color.Blue
-                ConnectionState.DISCONNECTED -> "未连接" to Color.Gray
-            }
-
-            Text(
-                text = statusText,
-                style = MaterialTheme.typography.bodySmall,
-                color = statusColor
-            )
-        }
-
-        Icon(
-            imageVector = getBatteryIcon(batteryLevel),
-            contentDescription = "电量",
-            modifier = Modifier
-                .padding(start = 8.dp)
-                .size(20.dp),
-            tint = when (batteryLevel) {
-                in 90..100 -> Color.Green
-                in 60..89 -> Color.Yellow
-                in 20..59 -> Color.Gray
-                else -> Color.Red
-            }
-        )
-
-        if (isCharging == true) {
-            Icon(
-                imageVector = Icons.Default.Bolt, // 使用闪电图标
-                contentDescription = "正在充电",
-                modifier = Modifier
-                    .size(16.dp),
-                tint = Color.Green
-            )
-        }
-
-        if (batteryLevel != -1) {
-            Text(
-                text = "$batteryLevel%",
-                style = MaterialTheme.typography.bodySmall,
-                color = if (isCharging == true) Color.Green else Color.Black,
-                modifier = Modifier.padding(start = 2.dp)
-            )
-        }
-    }
-}
-
-@Composable
-private fun getBatteryIcon(batteryLevel: Int): ImageVector {
-    return when {
-        batteryLevel > 95 -> Icons.Filled.BatteryFull
-        batteryLevel > 80 -> Icons.Filled.Battery6Bar
-        batteryLevel > 60 -> Icons.Filled.Battery5Bar
-        batteryLevel > 40 -> Icons.Filled.Battery4Bar
-        batteryLevel > 20 -> Icons.Filled.Battery3Bar
-        batteryLevel > 10 -> Icons.Filled.Battery2Bar
-        else -> Icons.Default.BatteryAlert
-    }
-}
-
-
-@Composable
-fun FeatureCard(feature: Feature, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(120.dp)
-            .clickable(onClick = onClick),
+            .padding(16.dp)
+            .height(100.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable(
+                    enabled = uiState.connectionState == ConnectionState.IDLE ||
+                            uiState.connectionState == ConnectionState.DISCONNECTED
+                ) {
+                    when (uiState.connectionState) {
+                        ConnectionState.IDLE -> onConnectClick()
+                        ConnectionState.DISCONNECTED -> onReconnectClick()
+                        else -> {}
+                    }
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            when (uiState.connectionState) {
+                // 1. 已连接
+                ConnectionState.CONNECTED -> {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.Bluetooth,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Column {
+                                Text(
+                                    text = uiState.connectedDeviceName ?: "Unknown Device",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = "已连接",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            if (uiState.isCharging == true) {
+                                Icon(
+                                    imageVector = Icons.Default.Bolt,
+                                    contentDescription = null,
+                                    tint = Color.Yellow,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                            Text(
+                                text = "${uiState.batteryLevel}%",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Icon(
+                                imageVector = if (uiState.batteryLevel > 20) Icons.Default.BatteryFull else Icons.Default.BatteryStd,
+                                contentDescription = null,
+                                tint = if (uiState.batteryLevel > 20) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
+                }
+
+                // 2. 连接中
+                ConnectionState.CONNECTING -> {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            strokeWidth = 2.dp,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            text = "正在连接设备...",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                }
+
+                // 3. 断开状态 (显示设备名，红色/灰色提示，点击重连)
+                ConnectionState.DISCONNECTED -> {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.BluetoothDisabled,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.error.copy(alpha = 0.8f),
+                            modifier = Modifier.size(28.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            // 依然显示之前的设备名称
+                            Text(
+                                text = uiState.connectedDeviceName ?: "Unknown Device",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.6f)
+                            )
+                            Text(
+                                text = "已断开连接 · 点击重连",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
+                }
+
+                // 4. 闲置/初始状态 (无设备，点击扫描)
+                ConnectionState.IDLE -> {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.BluetoothSearching,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.6f),
+                            modifier = Modifier.size(32.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            Text(
+                                text = "未连接设备",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = "点击扫描连接",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                            )
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+}
+
+@Composable
+fun FeatureGrid(
+    features: List<Feature>,
+    onFeatureClick: (Feature) -> Unit
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        items(features) { feature ->
+            FeatureItem(
+                feature = feature,
+                onClick = { onFeatureClick(feature) }
+            )
+        }
+    }
+}
+
+@Composable
+fun FeatureItem(
+    feature: Feature,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .aspectRatio(1.2f)
+            .clip(RoundedCornerShape(12.dp))
+            .clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
                 Icon(
                     imageVector = feature.icon,
                     contentDescription = feature.name,
-                    modifier = Modifier.size(40.dp),
+                    modifier = Modifier.size(36.dp),
                     tint = MaterialTheme.colorScheme.primary
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
                 Text(
                     text = feature.name,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Medium,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
             if (feature.badgeCount != null && feature.badgeCount > 0) {
-                Box(
+                Badge(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .padding(8.dp)
-                        .size(24.dp)
-                        .clip(CircleShape)
-                        .background(Color.Red),
-                    contentAlignment = Alignment.Center
+                        .padding(12.dp),
+                    containerColor = MaterialTheme.colorScheme.error
                 ) {
                     Text(
-                        text = feature.badgeCount.toString(),
-                        color = Color.White,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
+                        text = if (feature.badgeCount > 99) "99+" else feature.badgeCount.toString(),
+                        color = Color.White
                     )
                 }
             }
         }
     }
 }
-
 
 private fun checkAndRequestManageStoragePermission(context: Context) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {

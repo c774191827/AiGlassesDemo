@@ -1,4 +1,3 @@
-
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -13,6 +12,8 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import com.lw.ai.glasses.ui.theme.AppShapes
+import com.lw.ai.glasses.ui.theme.AppTypography
 
 private val DarkColorScheme = darkColorScheme()
 private val LightColorScheme = lightColorScheme()

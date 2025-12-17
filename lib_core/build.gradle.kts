@@ -100,6 +100,7 @@ dependencies {
 
     //preferences
     api(libs.androidx.datastore.preferences)
+    api(libs.androidx.preference)
 
     api(libs.webkit)
 
@@ -108,6 +109,8 @@ dependencies {
     api(libs.rxjava3)
     api(libs.rxandroid)
     api(libs.rxandroidble)
+
+
 
     testApi(libs.junit)
     androidTestApi(libs.androidx.junit)

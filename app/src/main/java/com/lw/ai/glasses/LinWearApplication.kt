@@ -4,7 +4,6 @@ import android.app.Application
 import android.os.Environment
 import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.Utils
-import com.fission.wear.glasses.sdk.GlassesManage
 import dagger.hilt.android.HiltAndroidApp
 import io.reactivex.rxjava3.exceptions.UndeliverableException
 import io.reactivex.rxjava3.plugins.RxJavaPlugins
@@ -29,8 +28,6 @@ class LinWearApplication : Application(){
             setFilePrefix("AiGlass")
             setDir(Environment.getExternalStorageDirectory())
         }
-
-        GlassesManage.initialize(this, 2)
 
         setupRxJavaErrorHandler()
     }

@@ -1,6 +1,6 @@
 package com.lw.top.lib_core.data.network.interceptor
 
-import com.lw.top.lib_core.utils.TokenManager
+import com.lw.top.lib_core.data.datastore.TokenManager
 import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject

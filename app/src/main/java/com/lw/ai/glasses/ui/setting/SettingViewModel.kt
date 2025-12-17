@@ -9,6 +9,7 @@ import com.fission.wear.glasses.sdk.data.dto.DeviceSettingsStateDTO
 import com.fission.wear.glasses.sdk.events.CmdResultEvent
 import com.lw.top.lib_core.data.datastore.BluetoothDataManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -36,6 +37,7 @@ class SettingViewModel @Inject constructor(
                         _uiState.update { state ->
                             val currentItems = state.settingItems.toMutableList()
                             currentItems.removeAll { it is SettingItem.InfoItem }
+
                             val versionItems = listOf(
                                 SettingItem.InfoItem("固件版本", events.data.firmwareVersion),
                                 SettingItem.InfoItem("Wifi版本", events.data.wifiVersion),
@@ -141,13 +143,13 @@ class SettingViewModel @Inject constructor(
 
         items.add(
             SettingItem.DropdownItem(
-                id = "led_brightness",
-                title = "LED 亮度",
-                selectedOption = SettingMapper.toLedBrightnessOptions()
-                    .find { it.value == dto.ledBrightness } ?: SettingMapper.toLedBrightnessOptions()
-                    .first(),
-                options = SettingMapper.toLedBrightnessOptions()
-            ))
+            id = "led_brightness",
+            title = "LED 亮度",
+            selectedOption = SettingMapper.toLedBrightnessOptions()
+                .find { it.value == dto.ledBrightness } ?: SettingMapper.toLedBrightnessOptions()
+                .first(),
+            options = SettingMapper.toLedBrightnessOptions()
+        ))
 
         items.add(
             SettingItem.ActionItem(
@@ -159,13 +161,13 @@ class SettingViewModel @Inject constructor(
 
         items.add(
             SettingItem.DropdownItem(
-                id = "wear_detection",
-                title = "佩戴检测",
-                selectedOption = SettingMapper.toWearDetectionOptions()
-                    .find { it.value == dto.wearDetectionEnabled }
-                    ?: SettingMapper.toWearDetectionOptions().first(),
-                options = SettingMapper.toWearDetectionOptions()
-            ))
+            id = "wear_detection",
+            title = "佩戴检测",
+            selectedOption = SettingMapper.toWearDetectionOptions()
+                .find { it.value == dto.wearDetectionEnabled }
+                ?: SettingMapper.toWearDetectionOptions().first(),
+            options = SettingMapper.toWearDetectionOptions()
+        ))
 
         items.add(
             SettingItem.SwitchItem(
@@ -182,11 +184,11 @@ class SettingViewModel @Inject constructor(
             items.add(
                 SettingItem.DropdownItem(
                     id = "gesture_${gestureType.name}",
-                    title = SettingMapper.toGestureTypeTitle(gestureType),
-                    selectedOption = gestureActionOptions.find { it.value == currentAction }
-                        ?: gestureActionOptions.first(),
-                    options = gestureActionOptions
-                ))
+                title = SettingMapper.toGestureTypeTitle(gestureType),
+                selectedOption = gestureActionOptions.find { it.value == currentAction }
+                    ?: gestureActionOptions.first(),
+                options = gestureActionOptions
+            ))
         }
 
         items.add(
@@ -200,12 +202,12 @@ class SettingViewModel @Inject constructor(
         items.add(
             SettingItem.DropdownItem(
                 id = "screen_orientation",
-                title = "屏幕方向",
-                selectedOption = SettingMapper.toScreenOrientationOptions()
-                    .find { it.value == dto.orientation } ?: SettingMapper.toScreenOrientationOptions()
-                    .first(),
-                options = SettingMapper.toScreenOrientationOptions()
-            ))
+            title = "屏幕方向",
+            selectedOption = SettingMapper.toScreenOrientationOptions()
+                .find { it.value == dto.orientation } ?: SettingMapper.toScreenOrientationOptions()
+                .first(),
+            options = SettingMapper.toScreenOrientationOptions()
+        ))
 
         val itemsWithDividers = items.flatMapIndexed { index, item ->
             if (index < items.size - 1) {
@@ -239,10 +241,18 @@ class SettingViewModel @Inject constructor(
         return if (newSelectedOption != null) this.copy(selectedOption = newSelectedOption) else this
     }
 
-    fun onDisconnect() {
+     fun onDisconnect() {
+         _uiState.update {
+             it.copy(isUnbinding = true)
+         }
         GlassesManage.disConnect()
+
         viewModelScope.launch {
+            delay(2000)
             bluetoothDataManager.clearBluetoothDevice()
+            _uiState.update {
+                it.copy(isUnbinding = false)
+            }
         }
         _uiState.update {
             it.copy(disconnectAction = it.disconnectAction.copy(isEnabled = false))

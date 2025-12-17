@@ -1,4 +1,3 @@
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.blankj.utilcode.util.ToastUtils
+import com.lw.ai.glasses.ui.base.data.ConfirmationData
 
 @Composable
 fun ConfirmationScreen(

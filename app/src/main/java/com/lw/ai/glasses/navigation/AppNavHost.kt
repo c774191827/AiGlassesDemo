@@ -1,9 +1,11 @@
+
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -11,7 +13,9 @@ import com.blankj.utilcode.util.LogUtils
 import com.lw.ai.glasses.ui.assistant.AiAssistantScreen
 import com.lw.ai.glasses.ui.home.HomeScreen
 import com.lw.ai.glasses.ui.image.ImageScreen
+import com.lw.ai.glasses.ui.live.LiveStreamingScreen
 import com.lw.ai.glasses.ui.setting.SettingScreen
+import com.lw.ai.glasses.ui.translator.TranslatorScreen
 import com.lw.ai.glasses.ui.update.UpdateScreen
 
 @SuppressLint("RestrictedApi", "UnrememberedGetBackStackEntry")
@@ -38,19 +42,9 @@ fun AppNavHost() {
 
         composable(Screen.Home.route) {
             HomeScreen(
-                onNavigateToImage = {
-                    navController.navigate(Screen.Image.route)
-                },
-                onNavigateToAssistant = {
-                    navController.navigate(Screen.Assistant.route)
-                },
-                onNavigateToSetting = {
-                    navController.navigate(Screen.Setting.route)
-                },
-                onNavigateToUpdate = {
-                    navController.navigate(Screen.Update.route)
+                onNavigate = {
+                    navController.navigate(it)
                 }
-
             )
         }
 
@@ -71,8 +65,21 @@ fun AppNavHost() {
                 navController.popBackStack()
             })
         }
+
         composable(Screen.Update.route) {
             UpdateScreen(onNavigateBack = {
+                navController.popBackStack()
+            })
+        }
+
+        composable(Screen.Translate.route) {
+            TranslatorScreen(onNavigateBack = {
+                navController.popBackStack()
+            })
+        }
+
+        composable(Screen.Live.route) {
+            LiveStreamingScreen(onNavigateBack = {
                 navController.popBackStack()
             })
         }

@@ -8,20 +8,24 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.lw.top.lib_core.data.local.dao.AiAssistantDao
 import com.lw.top.lib_core.data.local.dao.MediaFilesDao
+import com.lw.top.lib_core.data.local.dao.TranslationDao
 import com.lw.top.lib_core.data.local.dao.UsersDao
 import com.lw.top.lib_core.data.local.entity.AiAssistantEntity
 import com.lw.top.lib_core.data.local.entity.MediaFilesEntity
+import com.lw.top.lib_core.data.local.entity.TranslationEntity
 import com.lw.top.lib_core.data.local.entity.UserEntity
 
 @Database(
-    entities = [UserEntity::class, MediaFilesEntity::class, AiAssistantEntity::class],
-    version = 2
+    entities = [UserEntity::class, MediaFilesEntity::class, AiAssistantEntity::class, TranslationEntity::class],
+    version = 3
 )
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun userDao(): UsersDao
     abstract fun mediaFilesDao(): MediaFilesDao
     abstract fun aiAssistantDao(): AiAssistantDao
+
+    abstract fun translationDao(): TranslationDao
 
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {

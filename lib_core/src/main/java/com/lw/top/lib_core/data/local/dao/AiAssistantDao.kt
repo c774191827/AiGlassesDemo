@@ -14,7 +14,6 @@ interface AiAssistantDao: BaseDao<AiAssistantEntity> {
     @Query("SELECT * FROM ai_assistant ORDER BY timestamp DESC")
     suspend fun getAllMessages(): List<AiAssistantEntity>
 
-
     @Query("SELECT * FROM ai_assistant WHERE id = :id LIMIT 1")
     suspend fun getById(id: Long): AiAssistantEntity?
 

@@ -3,20 +3,23 @@ package com.lw.top.lib_core.data.datastore
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class BluetoothDataManager@Inject constructor(
+class BluetoothDataManager @Inject constructor(
     private val dataStore: DataStore<Preferences>
-){
+) {
     private object BluetoothKeys {
         val BLUETOOTH_ADDRESS = stringPreferencesKey("bluetooth_address")
         val BLUETOOTH_NAME = stringPreferencesKey("bluetooth_name")
+        val BLUETOOTH_STATE = intPreferencesKey("bluetooth_state")
     }
 
     val savedBluetoothAddress: Flow<String?> = dataStore.data.map { preferences ->
@@ -26,7 +29,9 @@ class BluetoothDataManager@Inject constructor(
     val savedBluetoothName: Flow<String?> = dataStore.data.map { preferences ->
         preferences[BluetoothKeys.BLUETOOTH_NAME]
     }
-
+    val savedBluetoothState: Flow<Int> = dataStore.data.map { preferences ->
+        preferences[BluetoothKeys.BLUETOOTH_STATE] ?: 0
+    }
 
     suspend fun getBluetoothAddress(): String? {
         return savedBluetoothAddress.firstOrNull()
@@ -36,6 +41,9 @@ class BluetoothDataManager@Inject constructor(
         return savedBluetoothName.firstOrNull()
     }
 
+    suspend fun getBluetoothState(): Int {
+        return savedBluetoothState.first()
+    }
 
     /**
      * 保存蓝牙设备的地址和名称。
@@ -47,6 +55,12 @@ class BluetoothDataManager@Inject constructor(
         }
     }
 
+    suspend fun saveBluetoothState(state: Int) {
+        dataStore.edit { preferences ->
+            preferences[BluetoothKeys.BLUETOOTH_STATE] = state
+        }
+    }
+
     /**
      * 清除存储的蓝牙设备信息。
      */
@@ -54,9 +68,9 @@ class BluetoothDataManager@Inject constructor(
         dataStore.edit { preferences ->
             preferences.remove(BluetoothKeys.BLUETOOTH_ADDRESS)
             preferences.remove(BluetoothKeys.BLUETOOTH_NAME)
+            preferences[BluetoothKeys.BLUETOOTH_STATE] = 0
         }
     }
-
 
 
 }

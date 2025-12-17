@@ -2,8 +2,10 @@ package com.lw.top.lib_core.di
 
 import com.lw.top.lib_core.data.local.dao.AiAssistantDao
 import com.lw.top.lib_core.data.local.dao.MediaFilesDao
+import com.lw.top.lib_core.data.local.dao.TranslationDao
 import com.lw.top.lib_core.data.repository.AiAssistantRepository
 import com.lw.top.lib_core.data.repository.PhotoRepository
+import com.lw.top.lib_core.data.repository.TranslationRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,4 +26,8 @@ object RepositoryModule {
         return AiAssistantRepository(aiAssistantDao)
     }
 
+    @Provides
+    fun provideTranslationRepository(translationDao: TranslationDao): TranslationRepository {
+        return TranslationRepository(translationDao)
+    }
 }

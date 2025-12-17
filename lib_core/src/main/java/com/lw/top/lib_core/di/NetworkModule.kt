@@ -1,12 +1,12 @@
 package com.lw.top.lib_core.di
 
+import com.google.gson.Gson
 import com.lw.top.lib_core.BuildConfig
+import com.lw.top.lib_core.data.datastore.TokenManager
 import com.lw.top.lib_core.data.network.ApiService
 import com.lw.top.lib_core.data.network.MockApiService
 import com.lw.top.lib_core.data.network.interceptor.CustomLoggingInterceptor
 import com.lw.top.lib_core.data.network.interceptor.HeaderInterceptor
-import com.lw.top.lib_core.utils.TokenManager
-import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

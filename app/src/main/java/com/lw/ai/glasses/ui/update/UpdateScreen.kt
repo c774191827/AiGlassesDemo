@@ -136,6 +136,7 @@ fun UpdateScreen(
                 Text(if (uiState.otaStatus == OtaStatus.UPGRADING) "升级中..." else "开始升级")
             }
         }
+
     }
 }
 
@@ -251,3 +252,4 @@ fun OtaTypeSelection(
         }
     }
 }
+

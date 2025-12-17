@@ -20,7 +20,7 @@ data class UpdateUiState(
     val recentFiles: List<FirmwareFile> = emptyList(),
     val selectedFileId: String? = null,
     val availableOtaTypes: List<GlassesConstant.OtaType> = listOf(GlassesConstant.OtaType.FIRMWARE, GlassesConstant.OtaType.WIFI_ISP),
-    val selectedOtaType: GlassesConstant.OtaType = GlassesConstant.OtaType.FIRMWARE
+    val selectedOtaType: GlassesConstant.OtaType = GlassesConstant.OtaType.FIRMWARE,
 )
 
 data class FirmwareFile(

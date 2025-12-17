@@ -30,6 +30,8 @@
         android:usesPermissionFlags="neverForLocation"
         tools:targetApi="33" />
 
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
 
     <application
         android:allowBackup="true"

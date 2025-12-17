@@ -1,0 +1,726 @@
+[{
+  "name": "南非荷兰语（南非）",
+  "nameEn": "Afrikaans (South Africa)",
+  "langType": 1,
+  "code": "af-ZA"
+}, {
+  "name": "阿姆哈拉语（埃塞俄比亚）",
+  "nameEn": "Amharic (Ethiopia)",
+  "langType": 2,
+  "code": "am-ET"
+}, {
+  "name": "阿拉伯语（阿拉伯联合酋长国）",
+  "nameEn": "Arabic (United Arab Emirates)",
+  "langType": 3,
+  "code": "ar-AE"
+}, {
+  "name": "阿拉伯语（巴林）",
+  "nameEn": "Arabic (Bahrain)",
+  "langType": 4,
+  "code": "ar-BH"
+}, {
+  "name": "阿拉伯语（阿尔及利亚）",
+  "nameEn": "Arabic (Algeria)",
+  "langType": 5,
+  "code": "ar-DZ"
+}, {
+  "name": "阿拉伯语（埃及）",
+  "nameEn": "Arabic (Egypt)",
+  "langType": 6,
+  "code": "ar-EG"
+}, {
+  "name": "阿拉伯语（以色列）",
+  "nameEn": "Arabic (Israel)",
+  "langType": 7,
+  "code": "ar-IL"
+}, {
+  "name": "阿拉伯语（伊拉克）",
+  "nameEn": "Arabic (Iraq)",
+  "langType": 8,
+  "code": "ar-IQ"
+}, {
+  "name": "阿拉伯语（约旦）",
+  "nameEn": "Arabic (Jordan)",
+  "langType": 9,
+  "code": "ar-JO"
+}, {
+  "name": "阿拉伯语（科威特）",
+  "nameEn": "Arabic (Kuwait)",
+  "langType": 10,
+  "code": "ar-KW"
+}, {
+  "name": "阿拉伯语（黎巴嫩）",
+  "nameEn": "Arabic (Lebanon)",
+  "langType": 11,
+  "code": "ar-LB"
+}, {
+  "name": "阿拉伯语（利比亚）",
+  "nameEn": "Arabic (Libya)",
+  "langType": 12,
+  "code": "ar-LY"
+}, {
+  "name": "阿拉伯语（摩洛哥）",
+  "nameEn": "Arabic (Morocco)",
+  "langType": 13,
+  "code": "ar-MA"
+}, {
+  "name": "阿拉伯语（阿曼）",
+  "nameEn": "Arabic (Oman)",
+  "langType": 14,
+  "code": "ar-OM"
+}, {
+  "name": "阿拉伯语（巴勒斯坦民族权利机构）",
+  "nameEn": "Arabic (Palestinian Authority)",
+  "langType": 15,
+  "code": "ar-PS"
+}, {
+  "name": "阿拉伯语（卡塔尔）",
+  "nameEn": "Arabic (Qatar)",
+  "langType": 16,
+  "code": "ar-QA"
+}, {
+  "name": "阿拉伯语（沙特阿拉伯）",
+  "nameEn": "Arabic (Saudi Arabia)",
+  "langType": 17,
+  "code": "ar-SA"
+}, {
+  "name": "阿拉伯语（叙利亚）",
+  "nameEn": "Arabic (Syria)",
+  "langType": 18,
+  "code": "ar-SY"
+}, {
+  "name": "阿拉伯语（突尼斯）",
+  "nameEn": "Arabic (Tunisia)",
+  "langType": 19,
+  "code": "ar-TN"
+}, {
+  "name": "阿拉伯语（也门）",
+  "nameEn": "Arabic (Yemen)",
+  "langType": 20,
+  "code": "ar-YE"
+}, {
+  "name": "阿萨姆语（印度）",
+  "nameEn": "Assamese (India)",
+  "langType": 21,
+  "code": "as-IN"
+}, {
+  "name": "阿塞拜疆语（拉丁语，阿塞拜疆）",
+  "nameEn": "Azerbaijani (Latin, Azerbaijan)",
+  "langType": 22,
+  "code": "az-AZ"
+}, {
+  "name": "保加利亚语（保加利亚）",
+  "nameEn": "Bulgarian (Bulgaria)",
+  "langType": 23,
+  "code": "bg-BG"
+}, {
+  "name": "孟加拉语（印度）",
+  "nameEn": "Bengali (India)",
+  "langType": 24,
+  "code": "bn-IN"
+}, {
+  "name": "波斯尼亚语（波斯尼亚和黑塞哥维那）",
+  "nameEn": "Bosnian (Bosnia and Herzegovina)",
+  "langType": 25,
+  "code": "bs-BA"
+}, {
+  "name": "加泰罗尼亚语",
+  "nameEn": "Catalan",
+  "langType": 26,
+  "code": "ca-ES"
+}, {
+  "name": "捷克语(捷克)",
+  "nameEn": "Czech (Czechia)",
+  "langType": 27,
+  "code": "cs-CZ"
+}, {
+  "name": "威尔士语（英国）",
+  "nameEn": "Welsh (United Kingdom)",
+  "langType": 28,
+  "code": "cy-GB"
+}, {
+  "name": "丹麦语（丹麦）",
+  "nameEn": "Danish (Denmark)",
+  "langType": 29,
+  "code": "da-DK"
+}, {
+  "name": "德语（奥地利）",
+  "nameEn": "German (Austria)",
+  "langType": 30,
+  "code": "de-AT"
+}, {
+  "name": "德语（瑞士）",
+  "nameEn": "German (Switzerland)",
+  "langType": 31,
+  "code": "de-CH"
+}, {
+  "name": "德语（德国）",
+  "nameEn": "German (Germany)",
+  "langType": 32,
+  "code": "de-DE"
+}, {
+  "name": "希腊语（希腊）",
+  "nameEn": "Greek (Greece)",
+  "langType": 33,
+  "code": "el-GR"
+}, {
+  "name": "英语（澳大利亚）",
+  "nameEn": "English (Australia)",
+  "langType": 34,
+  "code": "en-AU"
+}, {
+  "name": "英语（加拿大）",
+  "nameEn": "English (Canada)",
+  "langType": 35,
+  "code": "en-CA"
+}, {
+  "name": "英语（英国）",
+  "nameEn": "English (United Kingdom)",
+  "langType": 36,
+  "code": "en-GB"
+}, {
+  "name": "英语（加纳）",
+  "nameEn": "English (Ghana)",
+  "langType": 37,
+  "code": "en-GH"
+}, {
+  "name": "英语（香港特別行政区）",
+  "nameEn": "English (Hong Kong SAR)",
+  "langType": 38,
+  "code": "en-HK"
+}, {
+  "name": "英语（爱尔兰）",
+  "nameEn": "English (Ireland)",
+  "langType": 39,
+  "code": "en-IE"
+}, {
+  "name": "英语（印度）",
+  "nameEn": "English (India)",
+  "langType": 40,
+  "code": "en-IN"
+}, {
+  "name": "英语（肯尼亚）",
+  "nameEn": "English (Kenya)",
+  "langType": 41,
+  "code": "en-KE"
+}, {
+  "name": "英语（尼日利亚）",
+  "nameEn": "English (Nigeria)",
+  "langType": 42,
+  "code": "en-NG"
+}, {
+  "name": "英语（新西兰）",
+  "nameEn": "English (New Zealand)",
+  "langType": 43,
+  "code": "en-NZ"
+}, {
+  "name": "英语（菲律宾）",
+  "nameEn": "English (Philippines)",
+  "langType": 44,
+  "code": "en-PH"
+}, {
+  "name": "英语（新加坡）",
+  "nameEn": "English (Singapore)",
+  "langType": 45,
+  "code": "en-SG"
+}, {
+  "name": "英语（坦桑尼亚）",
+  "nameEn": "English (Tanzania)",
+  "langType": 46,
+  "code": "en-TZ"
+}, {
+  "name": "英语（美国）",
+  "nameEn": "English (United States)",
+  "langType": 47,
+  "code": "en-US"
+}, {
+  "name": "英语（南非）",
+  "nameEn": "English (South Africa)",
+  "langType": 48,
+  "code": "en-ZA"
+}, {
+  "name": "西班牙语（阿根廷）",
+  "nameEn": "Spanish (Argentina)",
+  "langType": 49,
+  "code": "es-AR"
+}, {
+  "name": "西班牙语（玻利维亚）",
+  "nameEn": "Spanish (Bolivia)",
+  "langType": 50,
+  "code": "es-BO"
+}, {
+  "name": "西班牙语（智利）",
+  "nameEn": "Spanish (Chile)",
+  "langType": 51,
+  "code": "es-CL"
+}, {
+  "name": "西班牙语（哥伦比亚）",
+  "nameEn": "Spanish (Colombia)",
+  "langType": 52,
+  "code": "es-CO"
+}, {
+  "name": "西班牙语（哥斯达黎加）",
+  "nameEn": "Spanish (Costa Rica)",
+  "langType": 53,
+  "code": "es-CR"
+}, {
+  "name": "西班牙语（古巴）",
+  "nameEn": "Spanish (Cuba)",
+  "langType": 54,
+  "code": "es-CU"
+}, {
+  "name": "西班牙语（多米尼加共和国）",
+  "nameEn": "Spanish (Dominican Republic)",
+  "langType": 55,
+  "code": "es-DO"
+}, {
+  "name": "西班牙语（厄瓜多尔）",
+  "nameEn": "Spanish (Ecuador)",
+  "langType": 56,
+  "code": "es-EC"
+}, {
+  "name": "西班牙语(西班牙)",
+  "nameEn": "Spanish (Spain)",
+  "langType": 57,
+  "code": "es-ES"
+}, {
+  "name": "西班牙语（赤道几内亚）",
+  "nameEn": "Spanish (Equatorial Guinea)",
+  "langType": 58,
+  "code": "es-GQ"
+}, {
+  "name": "西班牙语（危地马拉）",
+  "nameEn": "Spanish (Guatemala)",
+  "langType": 59,
+  "code": "es-GT"
+}, {
+  "name": "西班牙语（洪都拉斯）",
+  "nameEn": "Spanish (Honduras)",
+  "langType": 60,
+  "code": "es-HN"
+}, {
+  "name": "西班牙语（墨西哥）",
+  "nameEn": "Spanish (Mexico)",
+  "langType": 61,
+  "code": "es-MX"
+}, {
+  "name": "西班牙（尼加拉瓜）",
+  "nameEn": "Spanish (Nicaragua)",
+  "langType": 62,
+  "code": "es-NI"
+}, {
+  "name": "西班牙语（巴拿马）",
+  "nameEn": "Spanish (Panama)",
+  "langType": 63,
+  "code": "es-PA"
+}, {
+  "name": "西班牙语（秘鲁）",
+  "nameEn": "Spanish (Peru)",
+  "langType": 64,
+  "code": "es-PE"
+}, {
+  "name": "西班牙语（波多黎各）",
+  "nameEn": "Spanish (Puerto Rico)",
+  "langType": 65,
+  "code": "es-PR"
+}, {
+  "name": "西班牙语（巴拉圭）",
+  "nameEn": "Spanish (Paraguay)",
+  "langType": 66,
+  "code": "es-PY"
+}, {
+  "name": "西班牙语（萨尔瓦多）",
+  "nameEn": "Spanish (El Salvador)",
+  "langType": 67,
+  "code": "es-SV"
+}, {
+  "name": "西班牙语（美国）",
+  "nameEn": "Spanish (United States)",
+  "langType": 68,
+  "code": "es-US"
+}, {
+  "name": "西班牙语（乌拉圭）",
+  "nameEn": "Spanish (Uruguay)",
+  "langType": 69,
+  "code": "es-UY"
+}, {
+  "name": "西班牙语（委内瑞拉）",
+  "nameEn": "Spanish (Venezuela)",
+  "langType": 70,
+  "code": "es-VE"
+}, {
+  "name": "爱沙尼亚语（爱沙尼亚）",
+  "nameEn": "Estonian (Estonia)",
+  "langType": 71,
+  "code": "et-EE"
+}, {
+  "name": "巴斯克语",
+  "nameEn": "Basque",
+  "langType": 72,
+  "code": "eu-ES"
+}, {
+  "name": "波斯语（伊朗）",
+  "nameEn": "Persian (Iran)",
+  "langType": 73,
+  "code": "fa-IR"
+}, {
+  "name": "芬兰语（芬兰）",
+  "nameEn": "Finnish (Finland)",
+  "langType": 74,
+  "code": "fi-FI"
+}, {
+  "name": "菲律宾语（菲律宾）",
+  "nameEn": "Filipino (Philippines)",
+  "langType": 75,
+  "code": "fil-PH"
+}, {
+  "name": "法语（比利时）",
+  "nameEn": "French (Belgium)",
+  "langType": 76,
+  "code": "fr-BE"
+}, {
+  "name": "法语（加拿大）",
+  "nameEn": "French (Canada)",
+  "langType": 77,
+  "code": "fr-CA"
+}, {
+  "name": "法语（瑞士）",
+  "nameEn": "French (Switzerland)",
+  "langType": 78,
+  "code": "fr-CH"
+}, {
+  "name": "法语（法国）",
+  "nameEn": "French (France)",
+  "langType": 79,
+  "code": "fr-FR"
+}, {
+  "name": "爱尔兰语（爱尔兰）",
+  "nameEn": "Irish (Ireland)",
+  "langType": 80,
+  "code": "ga-IE"
+}, {
+  "name": "加利西亚语",
+  "nameEn": "Galician",
+  "langType": 81,
+  "code": "gl-ES"
+}, {
+  "name": "古吉拉特语（印度）",
+  "nameEn": "Gujarati (India)",
+  "langType": 82,
+  "code": "gu-IN"
+}, {
+  "name": "希伯来语（以色列）",
+  "nameEn": "Hebrew (Israel)",
+  "langType": 83,
+  "code": "he-IL"
+}, {
+  "name": "印地语（印度）",
+  "nameEn": "Hindi (India)",
+  "langType": 84,
+  "code": "hi-IN"
+}, {
+  "name": "克罗地亚语（克罗地亚）",
+  "nameEn": "Croatian (Croatia)",
+  "langType": 85,
+  "code": "hr-HR"
+}, {
+  "name": "匈牙利语（匈牙利）",
+  "nameEn": "Hungarian (Hungary)",
+  "langType": 86,
+  "code": "hu-HU"
+}, {
+  "name": "亚美尼亚语（亚美尼亚）",
+  "nameEn": "Armenian (Armenia)",
+  "langType": 87,
+  "code": "hy-AM"
+}, {
+  "name": "印度尼西亚语（印度尼西亚）",
+  "nameEn": "Indonesian (Indonesia)",
+  "langType": 88,
+  "code": "id-ID"
+}, {
+  "name": "冰岛语（冰岛）",
+  "nameEn": "Icelandic (Iceland)",
+  "langType": 89,
+  "code": "is-IS"
+}, {
+  "name": "意大利语（瑞士）",
+  "nameEn": "Italian (Switzerland)",
+  "langType": 90,
+  "code": "it-CH"
+}, {
+  "name": "意大利语（意大利）",
+  "nameEn": "Italian (Italy)",
+  "langType": 91,
+  "code": "it-IT"
+}, {
+  "name": "日语（日本）",
+  "nameEn": "Japanese (Japan)",
+  "langType": 92,
+  "code": "ja-JP"
+}, {
+  "name": "爪哇语(拉丁语、印度尼西亚)",
+  "nameEn": "Javanese (Latin, Indonesia)",
+  "langType": 93,
+  "code": "jv-ID"
+}, {
+  "name": "格鲁吉亚语（格鲁吉亚）",
+  "nameEn": "Georgian (Georgia)",
+  "langType": 94,
+  "code": "ka-GE"
+}, {
+  "name": "哈萨克语（哈萨克斯坦）",
+  "nameEn": "Kazakh (Kazakhstan)",
+  "langType": 95,
+  "code": "kk-KZ"
+}, {
+  "name": "高棉语（柬埔寨）",
+  "nameEn": "Khmer (Cambodia)",
+  "langType": 96,
+  "code": "km-KH"
+}, {
+  "name": "卡纳达语（印度）",
+  "nameEn": "Kannada (India)",
+  "langType": 97,
+  "code": "kn-IN"
+}, {
+  "name": "韩语(韩国)",
+  "nameEn": "Korean (Korea)",
+  "langType": 98,
+  "code": "ko-KR"
+}, {
+  "name": "老挝语（老挝）",
+  "nameEn": "Lao (Laos)",
+  "langType": 99,
+  "code": "lo-LA"
+}, {
+  "name": "立陶宛语（立陶宛）",
+  "nameEn": "Lithuanian (Lithuania)",
+  "langType": 100,
+  "code": "lt-LT"
+}, {
+  "name": "拉脱维亚语（拉脱维亚）",
+  "nameEn": "Latvian (Latvia)",
+  "langType": 101,
+  "code": "lv-LV"
+}, {
+  "name": "马其顿语（北马其顿）",
+  "nameEn": "Macedonian (North Macedonia)",
+  "langType": 102,
+  "code": "mk-MK"
+}, {
+  "name": "马拉雅拉姆语（印度）",
+  "nameEn": "Malayalam (India)",
+  "langType": 103,
+  "code": "ml-IN"
+}, {
+  "name": "蒙古语（蒙古）",
+  "nameEn": "Mongolian (Mongolia)",
+  "langType": 104,
+  "code": "mn-MN"
+}, {
+  "name": "马拉地语（印度）",
+  "nameEn": "Marathi (India)",
+  "langType": 105,
+  "code": "mr-IN"
+}, {
+  "name": "马来语（马来西亚）",
+  "nameEn": "Malay (Malaysia)",
+  "langType": 106,
+  "code": "ms-MY"
+}, {
+  "name": "马耳他语（马耳他）",
+  "nameEn": "Maltese (Malta)",
+  "langType": 107,
+  "code": "mt-MT"
+}, {
+  "name": "缅甸语(缅甸)",
+  "nameEn": "Burmese (Myanmar)",
+  "langType": 108,
+  "code": "my-MM"
+}, {
+  "name": "书面挪威语（挪威）",
+  "nameEn": "Norwegian Bokmål (Norway)",
+  "langType": 109,
+  "code": "nb-NO"
+}, {
+  "name": "尼泊尔语（尼泊尔）",
+  "nameEn": "Nepali (Nepal)",
+  "langType": 110,
+  "code": "ne-NP"
+}, {
+  "name": "荷兰语（比利时）",
+  "nameEn": "Dutch (Belgium)",
+  "langType": 111,
+  "code": "nl-BE"
+}, {
+  "name": "荷兰语（荷兰）",
+  "nameEn": "Dutch (Netherlands)",
+  "langType": 112,
+  "code": "nl-NL"
+}, {
+  "name": "奥里亚语（印度）",
+  "nameEn": "Odia (India)",
+  "langType": 113,
+  "code": "or-IN"
+}, {
+  "name": "旁遮普语（印度）",
+  "nameEn": "Punjabi (India)",
+  "langType": 114,
+  "code": "pa-IN"
+}, {
+  "name": "波兰语（波兰）",
+  "nameEn": "Polish (Poland)",
+  "langType": 115,
+  "code": "pl-PL"
+}, {
+  "name": "普什图语（阿富汗）",
+  "nameEn": "Pashto (Afghanistan)",
+  "langType": 116,
+  "code": "ps-AF"
+}, {
+  "name": "葡萄牙语（巴西）",
+  "nameEn": "Portuguese (Brazil)",
+  "langType": 117,
+  "code": "pt-BR"
+}, {
+  "name": "葡萄牙语(葡萄牙)",
+  "nameEn": "Portuguese (Portugal)",
+  "langType": 118,
+  "code": "pt-PT"
+}, {
+  "name": "罗马尼亚语（罗马尼亚）",
+  "nameEn": "Romanian (Romania)",
+  "langType": 119,
+  "code": "ro-RO"
+}, {
+  "name": "俄语（俄罗斯）",
+  "nameEn": "Russian (Russia)",
+  "langType": 120,
+  "code": "ru-RU"
+}, {
+  "name": "僧伽罗语（斯里兰卡）",
+  "nameEn": "Sinhala (Sri Lanka)",
+  "langType": 121,
+  "code": "si-LK"
+}, {
+  "name": "斯洛伐克语（斯洛伐克）",
+  "nameEn": "Slovak (Slovakia)",
+  "langType": 122,
+  "code": "sk-SK"
+}, {
+  "name": "斯洛文尼亚语（斯洛文尼亚）",
+  "nameEn": "Slovenian (Slovenia)",
+  "langType": 123,
+  "code": "sl-SI"
+}, {
+  "name": "索马里语（索马里）",
+  "nameEn": "Somali (Somalia)",
+  "langType": 124,
+  "code": "so-SO"
+}, {
+  "name": "阿尔巴尼亚语（阿尔巴尼亚）",
+  "nameEn": "Albanian (Albania)",
+  "langType": 125,
+  "code": "sq-AL"
+}, {
+  "name": "塞尔维亚语（西里尔文，塞尔维亚）",
+  "nameEn": "Serbian (Cyrillic, Serbia)",
+  "langType": 126,
+  "code": "sr-RS"
+}, {
+  "name": "瑞典语（瑞典）",
+  "nameEn": "Swedish (Sweden)",
+  "langType": 127,
+  "code": "sv-SE"
+}, {
+  "name": "斯瓦希里语（肯尼亚）",
+  "nameEn": "Kiswahili (Kenya)",
+  "langType": 128,
+  "code": "sw-KE"
+}, {
+  "name": "斯瓦希里语（坦桑尼亚）",
+  "nameEn": "Kiswahili (Tanzania)",
+  "langType": 129,
+  "code": "sw-TZ"
+}, {
+  "name": "泰米尔语（印度）",
+  "nameEn": "Tamil (India)",
+  "langType": 130,
+  "code": "ta-IN"
+}, {
+  "name": "泰卢固语（印度）",
+  "nameEn": "Telugu (India)",
+  "langType": 131,
+  "code": "te-IN"
+}, {
+  "name": "泰语（泰国）",
+  "nameEn": "Thai (Thailand)",
+  "langType": 132,
+  "code": "th-TH"
+}, {
+  "name": "土耳其语 (Türkiye)",
+  "nameEn": "Turkish (Türkiye)",
+  "langType": 133,
+  "code": "tr-TR"
+}, {
+  "name": "乌克兰语（乌克兰）",
+  "nameEn": "Ukrainian (Ukraine)",
+  "langType": 134,
+  "code": "uk-UA"
+}, {
+  "name": "乌尔都语（印度）",
+  "nameEn": "Urdu (India)",
+  "langType": 135,
+  "code": "ur-IN"
+}, {
+  "name": "乌兹别克语（拉丁语、乌兹别克斯坦）",
+  "nameEn": "Uzbek (Latin, Uzbekistan)",
+  "langType": 136,
+  "code": "uz-UZ"
+}, {
+  "name": "越南语（越南）",
+  "nameEn": "Vietnamese (Vietnam)",
+  "langType": 137,
+  "code": "vi-VN"
+}, {
+  "name": "中文（吴语，简体）",
+  "nameEn": "Chinese (Wu, Simplified)",
+  "langType": 138,
+  "code": "wuu-CN"
+}, {
+  "name": "中文（粤语，简体）",
+  "nameEn": "Chinese (Cantonese, Simplified)",
+  "langType": 139,
+  "code": "yue-CN"
+}, {
+  "name": "中文（普通话，简体）",
+  "nameEn": "Chinese (Mandarin, Simplified)",
+  "langType": 140,
+  "code": "zh-CN"
+}, {
+  "name": "中文（冀鲁官话，简体）",
+  "nameEn": "Chinese (Jilu Mandarin, Simplified)",
+  "langType": 141,
+  "code": "zh-CN-shandong"
+}, {
+  "name": "中文（西南普通话，简体）",
+  "nameEn": "Chinese (Southwestern Mandarin, Simplified)",
+  "langType": 142,
+  "code": "zh-CN-sichuan"
+}, {
+  "name": "中文（粤语，繁体）",
+  "nameEn": "Chinese (Cantonese, Traditional)",
+  "langType": 143,
+  "code": "zh-HK"
+}, {
+  "name": "中文（台湾普通话，繁体）",
+  "nameEn": "Chinese (Taiwanese Mandarin, Traditional)",
+  "langType": 144,
+  "code": "zh-TW"
+}, {
+  "name": "祖鲁语（南非）",
+  "nameEn": "isiZulu (South Africa)",
+  "langType": 145,
+  "code": "zu-ZA"
+}]

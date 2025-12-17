@@ -1,4 +1,3 @@
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +23,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.lw.ai.glasses.R
+import com.lw.ai.glasses.ui.theme.components.AppIcon
 import com.lw.top.lib_core.data.model.response.ApiResult
 
 @Composable

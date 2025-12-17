@@ -15,11 +15,11 @@ import com.lw.top.lib_core.data.local.entity.AiAssistantEntity
 import com.lw.top.lib_core.data.repository.AiAssistantRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.io.File
-import javax.inject.Inject
 
 @HiltViewModel
 class AiAssistantViewModel @Inject constructor(
@@ -52,6 +52,13 @@ class AiAssistantViewModel @Inject constructor(
             _uiState.value = _uiState.value.copy(
                 messages = emptyList()
             )
+            stopVadAudio()
+        }
+    }
+
+    fun stopVadAudio(){
+        viewModelScope.launch {
+            GlassesManage.stopVadAudio()
         }
     }
 
@@ -88,32 +95,35 @@ class AiAssistantViewModel @Inject constructor(
                         val file = File(path)
                         //调用大模型 识别图片。播报结果
                     }
-                    else -> {}
+                    else -> {
+
+                    }
                 }
+
             }
         }
     }
 
 
-    private suspend fun handleStreamingResult(data: AiChatMessageDTO) {
-        val questionText = anyToStringSafe(data.question)
-        val answerText = anyToStringSafe(data.answer)
-        if (questionText.isEmpty() && answerText.isEmpty() && !data.isFinished) return
+    private suspend fun handleStreamingResult(result: AiChatMessageDTO) {
+        val questionText = anyToStringSafe(result.question)
+        val answerText = anyToStringSafe(result.answer)
+        if (questionText.isEmpty() && answerText.isEmpty() && !result.isFinished) return
 
         currentMessage = if (currentMessage != null) {
             currentMessage!!.copy(
                 question = currentMessage!!.question + questionText,
                 answer = currentMessage!!.answer + answerText,
-                questionType = mapContentType(data.questionType),
-                answerType = mapContentType(data.answerType),
+                questionType = mapContentType(result.questionType),
+                answerType = mapContentType(result.answerType),
                 timestamp = currentMessage!!.timestamp
             )
         } else {
             AiAssistantEntity(
                 question = questionText,
-                questionType = mapContentType(data.questionType),
+                questionType = mapContentType(result.questionType),
                 answer = answerText,
-                answerType = mapContentType(data.answerType),
+                answerType = mapContentType(result.answerType),
                 timestamp = System.currentTimeMillis()
             )
         }
@@ -130,7 +140,7 @@ class AiAssistantViewModel @Inject constructor(
             messages = newList,
             streamingMessageId = currentMessage!!.hashCode().toLong()
         )
-        if (data.isFinished) {
+        if (result.isFinished) {
             if (currentMessage!!.question.isNotEmpty() || currentMessage!!.answer.isNotEmpty()) {
                 repository.insertMessage(currentMessage!!)
             }
@@ -156,5 +166,7 @@ class AiAssistantViewModel @Inject constructor(
             else -> any.toString()
         }
     }
+
+
 
 }
