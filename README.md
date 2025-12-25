@@ -73,6 +73,7 @@ GlassesManage.startScanBleDevices()
 ```kotlin
 GlassesManage.connect()
 ```
+BleComConfig 参数新增是否为OTA模式
 
 ---
 
@@ -156,6 +157,12 @@ GlassesManage.connectAiAssistant()
 - `DeviceRebooting`：设备重启中
 
 ---
+
+### **⑧ 眼镜动作状态 - ActionSync**
+- `ActionSync`：眼镜动作状态 ACTION_INDEX_TAKE_PHOTO 等，可主动获取。
+---
+
+
 
 
 ## **11. 眼镜设置功能**

@@ -7,10 +7,13 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewModelScope
+import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.fission.wear.glasses.sdk.GlassesManage
 import com.fission.wear.glasses.sdk.config.BleComConfig
 import com.fission.wear.glasses.sdk.config.BleScanConfig
+import com.fission.wear.glasses.sdk.constant.GlassesConstant.ACTION_INDEX_MUSIC
+import com.fission.wear.glasses.sdk.constant.GlassesConstant.ACTION_INDEX_WEAR
 import com.fission.wear.glasses.sdk.events.CmdResultEvent
 import com.fission.wear.glasses.sdk.events.ConnectionStateEvent
 import com.fission.wear.glasses.sdk.events.ScanStateEvent
@@ -179,10 +182,11 @@ class HomeViewModel @Inject constructor(
                                     .distinctBy { it.bleDevice.macAddress }
                                     .sortedByDescending { it.rssi }
                                     .filter {
-                                        it.bleDevice.name?.contains(
+                                        val name = it.bleDevice.name ?: ""
+                                        name.contains(
                                             "Glass",
                                             ignoreCase = true
-                                        ) == true
+                                        ) || name.contains("AG66", ignoreCase = true)
                                     }
                             )
                         }
@@ -224,8 +228,14 @@ class HomeViewModel @Inject constructor(
                         }
                         GlassesManage.getBatteryLevel()
                         GlassesManage.getMediaFileCount()
-                        GlassesManage.connectAiAssistant(bluetoothDataManager.getBluetoothAddress()!!,bluetoothDataManager.getBluetoothName()!!,
-                            "6600","ukuSPzMnpLvLS2TTLL9S8PvUJzfTCHnu","tz5dgRLm6tXS8gRr")
+                        GlassesManage.connectAiAssistant(
+                            bluetoothDataManager.getBluetoothAddress()!!,
+                            bluetoothDataManager.getBluetoothName()!!,
+                            "6600",
+                            "ukuSPzMnpLvLS2TTLL9S8PvUJzfTCHnu",
+                            "tz5dgRLm6tXS8gRr"
+                        )
+                        GlassesManage.getActionState()
                     }
 
                     is ConnectionStateEvent.Disconnected -> {
@@ -259,6 +269,25 @@ class HomeViewModel @Inject constructor(
                     is CmdResultEvent.MediaFileCount -> {
                         _uiState.update { it.copy(pendingSyncPhotosCount = events.count) }
                         updateFeatures()
+                    }
+
+                    is CmdResultEvent.ActionSync -> {
+                        when (events.type) {
+
+                            ACTION_INDEX_WEAR -> {
+                                LogUtils.d("佩戴状态发生变化${events.state}")
+                            }
+
+                            ACTION_INDEX_MUSIC -> {
+                                //App 设备翻译时，App自行处理逻辑，开启录音。关闭音乐等逻辑
+                                LogUtils.d("轻触设备，音乐状态发生变化${events.state}")
+                            }
+
+                            else -> {
+
+                            }
+
+                        }
                     }
 
                     else -> {}
@@ -302,7 +331,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
-                    connectedDeviceName = name.ifEmpty { bluetoothDataManager.getBluetoothName()!!},
+                    connectedDeviceName = name.ifEmpty { bluetoothDataManager.getBluetoothName()!! },
                 )
             }
         }

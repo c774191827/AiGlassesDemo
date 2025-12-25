@@ -110,6 +110,10 @@ dependencies {
     api(libs.rxandroid)
     api(libs.rxandroidble)
 
+    api(libs.libvlc)
+    api(libs.instavision.ffmpeg)
+    api(libs.volcengine.douyin.sdk)
+
 
 
     testApi(libs.junit)

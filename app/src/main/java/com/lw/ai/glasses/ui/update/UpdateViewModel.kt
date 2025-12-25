@@ -116,7 +116,7 @@ class UpdateViewModel @Inject constructor(
             val selectedType = currentState.selectedOtaType
 
             // 使用选中的文件路径和OTA类型来启动升级
-            GlassesManage.startOTA(fileToUpgrade.path, selectedType)
+            GlassesManage.startOTA(fileToUpgrade.path, selectedType, "1.2.7")
 
             _uiState.update {
                 it.copy(

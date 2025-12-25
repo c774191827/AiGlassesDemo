@@ -1,4 +1,3 @@
-
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -13,7 +12,7 @@ import com.blankj.utilcode.util.LogUtils
 import com.lw.ai.glasses.ui.assistant.AiAssistantScreen
 import com.lw.ai.glasses.ui.home.HomeScreen
 import com.lw.ai.glasses.ui.image.ImageScreen
-import com.lw.ai.glasses.ui.live.LiveStreamingScreen
+import com.lw.ai.glasses.ui.live.LiveScreen
 import com.lw.ai.glasses.ui.setting.SettingScreen
 import com.lw.ai.glasses.ui.translator.TranslatorScreen
 import com.lw.ai.glasses.ui.update.UpdateScreen
@@ -79,7 +78,7 @@ fun AppNavHost() {
         }
 
         composable(Screen.Live.route) {
-            LiveStreamingScreen(onNavigateBack = {
+            LiveScreen(onNavigateBack = {
                 navController.popBackStack()
             })
         }

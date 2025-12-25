@@ -7,5 +7,6 @@ sealed class Screen(val route: String) {
     object Update : Screen("ota_update")
     object Translate : Screen("ai_translate")
     object Live : Screen("live_streaming")
+    object Call : Screen("av_call")
 
 }

@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.SystemUpdate
 import androidx.compose.material.icons.filled.Translate
+import androidx.compose.material.icons.filled.VideoCall
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.polidea.rxandroidble3.scan.ScanResult
 
@@ -60,6 +61,12 @@ data class HomeUiState(
                     name = "直播",
                     icon = Icons.Default.LiveTv,
                     route = "live_streaming"
+                ),
+                Feature(
+                    id = "av_call",
+                    name = "音视频通话",
+                    icon = Icons.Default.VideoCall, // 如果没有 VideoCall，也可以用 Icons.Default.Call
+                    route = "av_call"
                 ),
                 Feature(
                     id = "glasses_settings",
