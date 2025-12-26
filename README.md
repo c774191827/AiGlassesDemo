@@ -106,7 +106,7 @@ GlassesManage.connectAiAssistant()
 
 ## **8. AI 翻译**
 请参考Demo中translate 实现流程
-- **startAiTranslation(fromLanguage: Int, toLanguageList: List<Int>)**：初始化需要翻译的语音
+- **startAiTranslation(fromLanguage: Int, toLanguageList: List<Int>,requestId: Long)**：初始化需要翻译的语音
 - **startReceivingAudio(mode: String,language: Int)**：切换AI助手为翻译模式
 - **sendReceivingAudioData(byteArray: ByteArray)**：发送录音数据。录音数据参数必须设置为频率16000，pcm流
 - **stopReceivingAudio(mode: String)**：停止录音后 必须发送stop

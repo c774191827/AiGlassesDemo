@@ -10,11 +10,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.blankj.utilcode.util.LogUtils
 import com.lw.ai.glasses.ui.assistant.AiAssistantScreen
+import com.lw.ai.glasses.ui.call.CallScreen
 import com.lw.ai.glasses.ui.home.HomeScreen
 import com.lw.ai.glasses.ui.image.ImageScreen
 import com.lw.ai.glasses.ui.live.LiveScreen
 import com.lw.ai.glasses.ui.setting.SettingScreen
-import com.lw.ai.glasses.ui.translator.TranslatorScreen
+import com.lw.ai.glasses.ui.translate.TranslatorScreen
 import com.lw.ai.glasses.ui.update.UpdateScreen
 
 @SuppressLint("RestrictedApi", "UnrememberedGetBackStackEntry")
@@ -79,6 +80,12 @@ fun AppNavHost() {
 
         composable(Screen.Live.route) {
             LiveScreen(onNavigateBack = {
+                navController.popBackStack()
+            })
+        }
+
+        composable(Screen.Call.route) {
+            CallScreen (onNavigateBack = {
                 navController.popBackStack()
             })
         }

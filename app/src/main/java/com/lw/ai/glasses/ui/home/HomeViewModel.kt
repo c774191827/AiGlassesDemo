@@ -151,6 +151,9 @@ class HomeViewModel @Inject constructor(
 
     private fun getPermissionsToRequest(): List<String> {
         val permissions = mutableListOf<String>()
+
+        permissions.add(Manifest.permission.CAMERA)
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             permissions.add(Manifest.permission.BLUETOOTH_SCAN)
             permissions.add(Manifest.permission.BLUETOOTH_CONNECT)

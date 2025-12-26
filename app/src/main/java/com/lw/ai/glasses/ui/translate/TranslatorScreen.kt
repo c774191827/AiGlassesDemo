@@ -1,4 +1,4 @@
-package com.lw.ai.glasses.ui.translator
+package com.lw.ai.glasses.ui.translate
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
@@ -32,6 +32,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -56,8 +57,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.lw.ai.glasses.ui.translate.Language
-import com.lw.ai.glasses.ui.translate.TranslatorViewModel
 import com.lw.top.lib_core.data.local.entity.TranslationEntity
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,8 +69,6 @@ fun TranslatorScreen(
     var showClearDialog by remember { mutableStateOf(false) }
     var showLanguageSheet by remember { mutableStateOf(false) }
     var isSelectingSource by remember { mutableStateOf(true) }
-
-
 
     if (showClearDialog) {
         AlertDialog(
@@ -152,6 +149,12 @@ fun TranslatorScreen(
                 onSwapClick = { viewModel.swapLanguages() }
             )
 
+            // 模式选择器
+            ModeSelector(
+                currentMode = uiState.currentMode,
+                onModeSelected = { viewModel.setTranslationMode(it) }
+            )
+
             LazyColumn(
                 modifier = Modifier
                     .weight(1f)
@@ -171,6 +174,35 @@ fun TranslatorScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ModeSelector(
+    currentMode: TranslationMode,
+    onModeSelected: (TranslationMode) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        FilterChip(
+            selected = currentMode == TranslationMode.REAL_TIME,
+            onClick = { onModeSelected(TranslationMode.REAL_TIME) },
+            label = { Text("实时翻译") },
+            shape = RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp),
+            modifier = Modifier.weight(1f)
+        )
+        FilterChip(
+            selected = currentMode == TranslationMode.DIALOGUE,
+            onClick = { onModeSelected(TranslationMode.DIALOGUE) },
+            label = { Text("对话翻译") },
+            shape = RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp),
+            modifier = Modifier.weight(1f)
+        )
+    }
+}
+
 @Composable
 fun LanguageTopBar(
     srcLang: Language?,
@@ -182,7 +214,7 @@ fun LanguageTopBar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
             .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(12.dp))
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -280,7 +312,7 @@ fun LanguageSelectionSheet(
 @Composable
 fun RecordControlPanel(
     isRecording: Boolean,
-    currentAmplitude: Float, // 新增：接收当前音量 (0.0 - 1.0)
+    currentAmplitude: Float,
     onStartRecording: () -> Unit,
     onStopRecording: () -> Unit
 ) {

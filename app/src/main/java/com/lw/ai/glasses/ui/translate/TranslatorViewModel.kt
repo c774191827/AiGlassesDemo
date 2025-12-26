@@ -11,10 +11,10 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.lw.top.lib_core.data.local.entity.TranslationEntity
 import com.lw.top.lib_core.data.repository.TranslationRepository
-import com.lw.top.lib_core.utils.StreamAudioRecorder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -112,6 +112,10 @@ class TranslatorViewModel @Inject constructor(
         )
     }
 
+    fun setTranslationMode(mode: TranslationMode) {
+        _uiState.update { it.copy(currentMode = mode) }
+    }
+
     fun swapLanguages() {
         _uiState.update {
             it.copy(
@@ -132,30 +136,43 @@ class TranslatorViewModel @Inject constructor(
             it.copy(isRecording = true)
         }
 
-        GlassesManage.startAiTranslation(
-            uiState.value.srcLang?.langType!!,
-            listOf(uiState.value.targetLang?.langType!!)
-        )
+        viewModelScope.launch {
+            GlassesManage.startAiTranslation(
+                uiState.value.srcLang?.langType!!,
+                listOf(uiState.value.targetLang?.langType!!)
+            )
 
-        GlassesManage.startReceivingAudio(
-            GlassesConstant.AI_ASSISTANT_TYPE_LISTEN_MODE_TRANSLATION,
-            140
-        )
-        streamRecorder.start(fileName) { pcmData ->
-            LogUtils.d("录音中，发送数据$pcmData")
-            GlassesManage.sendReceivingAudioData(pcmData)
-            val amplitude = calculateRMS(pcmData)
-            _uiState.update { it.copy(currentAmplitude = amplitude) }
+            delay(200)
+
+            val modeStr = when (_uiState.value.currentMode) {
+                TranslationMode.DIALOGUE -> GlassesConstant.AI_ASSISTANT_TYPE_LISTEN_MODE_TRANSLATION
+                TranslationMode.REAL_TIME -> GlassesConstant.AI_ASSISTANT_TYPE_LISTEN_MODE_SIMULTANEOUS_INTERPRETATION
+            }
+
+            GlassesManage.startReceivingAudio(modeStr, 140)
+
+            streamRecorder.start(fileName) { pcmData ->
+                LogUtils.d("录音中，发送数据$pcmData")
+                GlassesManage.sendReceivingAudioData(pcmData)
+                val amplitude = calculateRMS(pcmData)
+                _uiState.update { it.copy(currentAmplitude = amplitude) }
+            }
         }
     }
 
     fun stopRecording() {
         viewModelScope.launch {
-            val wavFilePath = streamRecorder.stop()
+            streamRecorder.stop()
             _uiState.update {
                 it.copy(isRecording = false, currentAmplitude = 0f)
             }
-            GlassesManage.stopReceivingAudio(GlassesConstant.AI_ASSISTANT_TYPE_LISTEN_MODE_TRANSLATION)
+            
+            val modeStr = when (_uiState.value.currentMode) {
+                TranslationMode.DIALOGUE -> GlassesConstant.AI_ASSISTANT_TYPE_LISTEN_MODE_TRANSLATION
+                TranslationMode.REAL_TIME -> GlassesConstant.AI_ASSISTANT_TYPE_LISTEN_MODE_SIMULTANEOUS_INTERPRETATION
+            }
+            
+            GlassesManage.stopReceivingAudio(modeStr)
         }
     }
 
