@@ -112,7 +112,7 @@ dependencies {
 
     api(libs.libvlc)
     api(libs.instavision.ffmpeg)
-    api(libs.volcengine.douyin.sdk)
+    compileOnly(libs.volcengine.douyin.sdk)
 
 
 

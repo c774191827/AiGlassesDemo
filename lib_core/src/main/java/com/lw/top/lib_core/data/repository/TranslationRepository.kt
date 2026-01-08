@@ -1,7 +1,9 @@
 package com.lw.top.lib_core.data.repository
 
 import com.lw.top.lib_core.data.local.dao.TranslationDao
-import com.lw.top.lib_core.data.local.entity.TranslationEntity
+import com.lw.top.lib_core.data.local.entity.TranslationMessageEntity
+import com.lw.top.lib_core.data.local.entity.TranslationSessionEntity
+import com.lw.top.lib_core.data.local.entity.TranslationWithMessages
 import com.lw.top.lib_core.data.repository.base.BaseRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -12,35 +14,25 @@ class TranslationRepository @Inject constructor(
     private val translationDao: TranslationDao
 ) : BaseRepository() {
 
-    fun getAllTranslationsFlow(): Flow<List<TranslationEntity>> {
-        return translationDao.getAllTranslationsFlow()
+    fun getAllSessionsWithMessagesFlow(): Flow<List<TranslationWithMessages>> {
+        return translationDao.getAllSessionsWithMessagesFlow()
     }
 
-    suspend fun getAllTranslations(): List<TranslationEntity> {
-        return translationDao.getAllTranslations()
-    }
-
-    suspend fun insertTranslationAndGetId(entity: TranslationEntity): Long {
-        return withContext(Dispatchers.IO) {
-            translationDao.insert(entity)
-        }
-    }
-
-    suspend fun insertTranslation(entity: TranslationEntity) {
+    suspend fun insertSession(session: TranslationSessionEntity) {
         withContext(Dispatchers.IO) {
-            translationDao.insert(entity)
+            translationDao.insertSession(session)
         }
     }
 
-    suspend fun getTranslationById(id: Long): TranslationEntity? {
-        return withContext(Dispatchers.IO) {
-            translationDao.getById(id)
-        }
-    }
-
-    suspend fun deleteTranslation(entity: TranslationEntity) {
+    suspend fun insertMessage(message: TranslationMessageEntity) {
         withContext(Dispatchers.IO) {
-            translationDao.delete(entity)
+            translationDao.insertMessage(message)
+        }
+    }
+
+    suspend fun getMessageById(requestId: String, messageId: String): TranslationMessageEntity? {
+        return withContext(Dispatchers.IO) {
+            translationDao.getMessageById(requestId, messageId)
         }
     }
 
@@ -50,4 +42,9 @@ class TranslationRepository @Inject constructor(
         }
     }
 
+    suspend fun deleteMessageById(requestId: String, messageId: String) {
+        withContext(Dispatchers.IO) {
+            translationDao.deleteMessageById(requestId, messageId)
+        }
+    }
 }

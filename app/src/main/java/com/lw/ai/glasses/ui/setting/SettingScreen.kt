@@ -33,6 +33,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -62,6 +63,42 @@ fun SettingScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showInputDialog by remember { mutableStateOf(false) }
+    var showRebootConfirm by remember { mutableStateOf(false) }
+    var showResetConfirm by remember { mutableStateOf(false) }
+
+    if (showRebootConfirm) {
+        AlertDialog(
+            onDismissRequest = { showRebootConfirm = false },
+            title = { Text("重启设备") },
+            text = { Text("确定要重启眼镜吗？") },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.rebootDevice()
+                    showRebootConfirm = false
+                }) { Text("确认") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showRebootConfirm = false }) { Text("取消") }
+            }
+        )
+    }
+
+    if (showResetConfirm) {
+        AlertDialog(
+            onDismissRequest = { showResetConfirm = false },
+            title = { Text("恢复出厂设置") },
+            text = { Text("此操作将清除眼镜所有设置并重启，确定继续吗？") },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.restoreFactorySettings()
+                    showResetConfirm = false
+                }) { Text("确认", color = MaterialTheme.colorScheme.error) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showResetConfirm = false }) { Text("取消") }
+            }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -116,10 +153,10 @@ fun SettingScreen(
                     }
                     is SettingItem.ActionItem -> {
                         ActionSettingItem(item = item) {
-                            if (item.id == "record_duration") {
-                                showInputDialog = true
-                            } else {
-                                // TODO: Handle other ActionItem clicks
+                            when (item.id) {
+                                "record_duration" -> showInputDialog = true
+                                "reboot_device" -> showRebootConfirm = true
+                                "restore_factory" -> showResetConfirm = true
                             }
                         }
                     }
@@ -278,8 +315,7 @@ private fun BaseSettingItem(
             .fillMaxWidth()
             .clickable(enabled = isEnabled, onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+        verticalAlignment = Alignment.CenterVertically) {
         Column(modifier = Modifier.weight(1f)) {
             Text(text = title, fontWeight = FontWeight.Medium, fontSize = 16.sp, color = titleColor)
             if (summary != null) {

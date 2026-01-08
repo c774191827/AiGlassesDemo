@@ -12,11 +12,13 @@ import com.blankj.utilcode.util.ToastUtils
 import com.fission.wear.glasses.sdk.GlassesManage
 import com.fission.wear.glasses.sdk.config.BleComConfig
 import com.fission.wear.glasses.sdk.config.BleScanConfig
+import com.fission.wear.glasses.sdk.constant.GlassesConstant
 import com.fission.wear.glasses.sdk.constant.GlassesConstant.ACTION_INDEX_MUSIC
 import com.fission.wear.glasses.sdk.constant.GlassesConstant.ACTION_INDEX_WEAR
 import com.fission.wear.glasses.sdk.events.CmdResultEvent
 import com.fission.wear.glasses.sdk.events.ConnectionStateEvent
 import com.fission.wear.glasses.sdk.events.ScanStateEvent
+import com.lw.top.lib_core.data.datastore.AppDataManager
 import com.lw.top.lib_core.data.datastore.BluetoothDataManager
 import com.polidea.rxandroidble3.exceptions.BleDisconnectedException
 import com.polidea.rxandroidble3.exceptions.BleGattException
@@ -35,7 +37,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val bluetoothDataManager: BluetoothDataManager
+    private val bluetoothDataManager: BluetoothDataManager,
+    private val appDataManager: AppDataManager
 ) : BaseViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -186,10 +189,9 @@ class HomeViewModel @Inject constructor(
                                     .sortedByDescending { it.rssi }
                                     .filter {
                                         val name = it.bleDevice.name ?: ""
-                                        name.contains(
-                                            "Glass",
-                                            ignoreCase = true
-                                        ) || name.contains("AG66", ignoreCase = true)
+                                        name.contains("Glass", ignoreCase = true)
+                                                || name.contains("AG66", ignoreCase = true)
+                                                || name.contains("Tesee", ignoreCase = true)
                                     }
                             )
                         }
@@ -339,6 +341,13 @@ class HomeViewModel @Inject constructor(
             }
         }
 
+    }
+
+    fun updateEnvironment(env: GlassesConstant.ServerEnvironment) {
+        GlassesManage.updateEnvironment(env)
+        viewModelScope.launch {
+            appDataManager.saveEnvironment(env.name)
+        }
     }
 
     private fun updateFeatures() {

@@ -12,19 +12,25 @@ import com.lw.top.lib_core.data.local.dao.TranslationDao
 import com.lw.top.lib_core.data.local.dao.UsersDao
 import com.lw.top.lib_core.data.local.entity.AiAssistantEntity
 import com.lw.top.lib_core.data.local.entity.MediaFilesEntity
-import com.lw.top.lib_core.data.local.entity.TranslationEntity
+import com.lw.top.lib_core.data.local.entity.TranslationMessageEntity
+import com.lw.top.lib_core.data.local.entity.TranslationSessionEntity
 import com.lw.top.lib_core.data.local.entity.UserEntity
 
 @Database(
-    entities = [UserEntity::class, MediaFilesEntity::class, AiAssistantEntity::class, TranslationEntity::class],
-    version = 3
+    entities = [
+        UserEntity::class,
+        MediaFilesEntity::class,
+        AiAssistantEntity::class,
+        TranslationSessionEntity::class,
+        TranslationMessageEntity::class
+    ],
+    version = 4
 )
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun userDao(): UsersDao
     abstract fun mediaFilesDao(): MediaFilesDao
     abstract fun aiAssistantDao(): AiAssistantDao
-
     abstract fun translationDao(): TranslationDao
 
     companion object {
@@ -35,19 +41,12 @@ abstract class AppDatabase : RoomDatabase() {
                 )
             }
         }
-//        val MIGRATION_3_4 = object : Migration(3, 4) {
-//            override fun migrate(database: SupportSQLiteDatabase) {
-//                // User表新增age字段
-//                database.execSQL("ALTER TABLE users ADD COLUMN avatar TEXT NOT NULL DEFAULT ''")
-//            }
-//        }
 
         fun getDatabase(context: Context): AppDatabase {
             return Room.databaseBuilder(context, AppDatabase::class.java, "app_database")
                 .addMigrations(MIGRATION_1_2)
+                .fallbackToDestructiveMigration() // 结构变化较大，开发阶段使用破坏性迁移
                 .build()
         }
     }
-
-
 }

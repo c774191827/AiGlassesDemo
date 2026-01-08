@@ -9,12 +9,12 @@ import com.fission.wear.glasses.sdk.constant.GlassesConstant
 import com.fission.wear.glasses.sdk.events.AiTranslationEvent
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.lw.top.lib_core.data.local.entity.TranslationEntity
+import com.lw.top.lib_core.data.local.entity.TranslationMessageEntity
+import com.lw.top.lib_core.data.local.entity.TranslationSessionEntity
 import com.lw.top.lib_core.data.repository.TranslationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -39,9 +39,10 @@ class TranslatorViewModel @Inject constructor(
         loadLanguages()
 
         viewModelScope.launch {
-            repository.getAllTranslationsFlow().collect { fullList ->
+            // 订阅所有会话及消息
+            repository.getAllSessionsWithMessagesFlow().collect { sessionsWithMessages ->
                 _uiState.update { state ->
-                    state.copy(messages = fullList)
+                    state.copy(history = sessionsWithMessages)
                 }
             }
         }
@@ -50,26 +51,50 @@ class TranslatorViewModel @Inject constructor(
             GlassesManage.eventFlow().collect { events ->
                 when (events) {
                     is AiTranslationEvent.AiTranslationResult -> {
-                        LogUtils.d("AiTranslationResult: ${events.data}")
-                        val translationEntity = TranslationEntity(
-                            originalText = events.data.originalText!!,
-                            translatedText = events.data.translatedText!!,
-                            audioPath = events.data.translatedFileUrl,
-                            isUser = true,
-                            language = "CN"
-                        )
-                        repository.insertTranslation(translationEntity)
+                        val result = events.data
+                        val requestId = result.id ?: return@collect
+                        val msgId = result.messageId ?: return@collect
+
+                        viewModelScope.launch {
+                            // 1. 确保 Session 存在
+                            repository.insertSession(
+                                TranslationSessionEntity(
+                                    requestId = requestId,
+                                    sourceLang = uiState.value.srcLang?.name ?: "",
+                                    targetLang = uiState.value.targetLang?.name ?: ""
+                                )
+                            )
+
+                            // 2. 获取现有的消息片段（必须同时匹配 requestId 和 messageId）
+                            val existing = repository.getMessageById(requestId, msgId)
+
+                            // 3. 构建新的实体：采用非空覆盖逻辑
+                            val newEntity = if (existing != null) {
+                                existing.copy(
+                                    originalText = result.originalText ?: existing.originalText,
+                                    translatedText = result.translatedText ?: existing.translatedText,
+                                    audioPath = result.translatedFileUrl ?: existing.audioPath,
+                                    isFinished = result.isFinished
+                                )
+                            } else {
+                                TranslationMessageEntity(
+                                    messageId = msgId,
+                                    requestId = requestId,
+                                    originalText = result.originalText ?: "",
+                                    translatedText = result.translatedText ?: "",
+                                    audioPath = result.translatedFileUrl,
+                                    isFinished = result.isFinished
+                                )
+                            }
+
+                            // 4. 插入或流式更新数据库
+                            repository.insertMessage(newEntity)
+                        }
                     }
-
-                    is AiTranslationEvent.Failed -> {
-
-                    }
-
                     else -> {}
                 }
             }
         }
-
     }
 
     private fun loadLanguages() {
@@ -98,18 +123,10 @@ class TranslatorViewModel @Inject constructor(
 
     fun setSourceLanguage(lang: Language) {
         _uiState.update { it.copy(srcLang = lang) }
-        GlassesManage.startAiTranslation(
-            uiState.value.srcLang?.langType!!,
-            listOf(uiState.value.targetLang?.langType!!)
-        )
     }
 
     fun setTargetLanguage(lang: Language) {
         _uiState.update { it.copy(targetLang = lang) }
-        GlassesManage.startAiTranslation(
-            uiState.value.srcLang?.langType!!,
-            listOf(uiState.value.targetLang?.langType!!)
-        )
     }
 
     fun setTranslationMode(mode: TranslationMode) {
@@ -123,26 +140,20 @@ class TranslatorViewModel @Inject constructor(
                 targetLang = it.srcLang
             )
         }
-        GlassesManage.startAiTranslation(
-            uiState.value.srcLang?.langType!!,
-            listOf(uiState.value.targetLang?.langType!!)
-        )
     }
 
     fun startRecording() {
         val fileName = "record_${System.currentTimeMillis()}"
-
-        _uiState.update {
-            it.copy(isRecording = true)
-        }
+        _uiState.update { it.copy(isRecording = true) }
 
         viewModelScope.launch {
+            val requestId = System.currentTimeMillis() // 发起一个新会话 ID
+            
             GlassesManage.startAiTranslation(
                 uiState.value.srcLang?.langType!!,
-                listOf(uiState.value.targetLang?.langType!!)
+                listOf(uiState.value.targetLang?.langType!!),
+                requestId
             )
-
-            delay(200)
 
             val modeStr = when (_uiState.value.currentMode) {
                 TranslationMode.DIALOGUE -> GlassesConstant.AI_ASSISTANT_TYPE_LISTEN_MODE_TRANSLATION
@@ -150,10 +161,9 @@ class TranslatorViewModel @Inject constructor(
             }
 
             GlassesManage.startReceivingAudio(modeStr, 140)
-
+            
             streamRecorder.start(fileName) { pcmData ->
-                LogUtils.d("录音中，发送数据$pcmData")
-                GlassesManage.sendReceivingAudioData(pcmData)
+                GlassesManage.sendReceivingAudioData(modeStr, pcmData)
                 val amplitude = calculateRMS(pcmData)
                 _uiState.update { it.copy(currentAmplitude = amplitude) }
             }
@@ -163,15 +173,12 @@ class TranslatorViewModel @Inject constructor(
     fun stopRecording() {
         viewModelScope.launch {
             streamRecorder.stop()
-            _uiState.update {
-                it.copy(isRecording = false, currentAmplitude = 0f)
-            }
+            _uiState.update { it.copy(isRecording = false, currentAmplitude = 0f) }
             
             val modeStr = when (_uiState.value.currentMode) {
                 TranslationMode.DIALOGUE -> GlassesConstant.AI_ASSISTANT_TYPE_LISTEN_MODE_TRANSLATION
                 TranslationMode.REAL_TIME -> GlassesConstant.AI_ASSISTANT_TYPE_LISTEN_MODE_SIMULTANEOUS_INTERPRETATION
             }
-            
             GlassesManage.stopReceivingAudio(modeStr)
         }
     }
@@ -179,11 +186,8 @@ class TranslatorViewModel @Inject constructor(
     fun clearHistory() {
         viewModelScope.launch {
             repository.clearAllTranslations()
-            _uiState.update { it.copy(messages = emptyList()) }
         }
-
     }
-
 
     fun playAudio(path: String) {
         try {
@@ -211,7 +215,6 @@ class TranslatorViewModel @Inject constructor(
         }
         val mean = sum / (pcmData.size / 2)
         val rms = sqrt(mean)
-
         val maxAmplitude = 32768.0
         val db = if (rms > 0) 20 * log10(rms / maxAmplitude) else -100.0
         val normalized = ((db + 60) / 60).coerceIn(0.0, 1.0)
@@ -226,5 +229,4 @@ class TranslatorViewModel @Inject constructor(
             mediaPlayer = null
         }
     }
-
 }

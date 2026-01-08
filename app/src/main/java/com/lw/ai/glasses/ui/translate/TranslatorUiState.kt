@@ -1,6 +1,7 @@
 package com.lw.ai.glasses.ui.translate
 
-import com.lw.top.lib_core.data.local.entity.TranslationEntity
+import com.lw.top.lib_core.data.local.entity.TranslationMessageEntity
+import com.lw.top.lib_core.data.local.entity.TranslationWithMessages
 import kotlinx.serialization.Serializable
 
 /**
@@ -12,14 +13,17 @@ enum class TranslationMode {
 }
 
 data class TranslatorUiState(
-    val messages: List<TranslationEntity> = emptyList(),
+    // 所有的历史会话及其消息
+    val history: List<TranslationWithMessages> = emptyList(),
+    // 当前正在展示的消息列表（通常取最近的一个 session 里的 messages）
+    val currentMessages: List<TranslationMessageEntity> = emptyList(),
     val isRecording: Boolean = false,
     val recordingLanguage: String = "",
     val currentAmplitude: Float = 0f,
     val allLanguages: List<Language> = emptyList(),
     val srcLang: Language? = null,
     val targetLang: Language? = null,
-    val currentMode: TranslationMode = TranslationMode.REAL_TIME, // 默认实时翻译
+    val currentMode: TranslationMode = TranslationMode.REAL_TIME,
     val error: String? = null
 )
 

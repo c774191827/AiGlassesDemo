@@ -49,7 +49,7 @@ implementation("io.reactivex.rxjava3:rxjava:3.1.6")
 - OkHttp
 - Retrofit
 - UtilCodex
-
+- 详情参考settings.gradle
 ---
 
 ## **3. SDK 初始化**
@@ -58,6 +58,7 @@ implementation("io.reactivex.rxjava3:rxjava:3.1.6")
 主要方法：
 - `Utils.init()`
 - `GlassesManage.initialize()`
+- `GlassesManage.updateEnvironment(env)`
 
 ---
 
@@ -118,6 +119,11 @@ GlassesManage.connectAiAssistant()
 
 
 ## **10. SDK Flow 流监听**
+
+### **通用 - CmdResultEvent**
+- `CallConnected`& `CallDisconnected` 接听&挂断音视频 
+
+
 ### **① 搜索设备 - ScanStateEvent**
 - `DeviceFound`：返回 `ScanResult`
 - `ScanFinished`：扫描完成
@@ -163,8 +169,6 @@ GlassesManage.connectAiAssistant()
 ---
 
 
-
-
 ## **11. 眼镜设置功能**
 SDK 提供了读取和修改眼镜多种参数的功能，如 LED 亮度、手势快捷方式、佩戴检测等。
 
@@ -192,6 +196,15 @@ GlassesManage.setGestureAction()
 ### **③ 获取设备版本信息**
 ```kotlin
 GlassesManage.getDeviceVersionInfo()
+```
+### **④ 设备重启**
+```kotlin
+GlassesManage.rebootDevice()
+```
+
+### **⑤ 设备恢复出厂设置**
+```kotlin
+GlassesManage.restoreFactorySettings()
 ```
 
 ---

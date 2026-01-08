@@ -6,5 +6,7 @@ data class CallUiState(
     val selectedLanguage: String = "英语",
     val translationLogs: List<TranslationMessage> = emptyList(),
     val isRemoteVideoReady: Boolean = false,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val isMicMuted: Boolean = false,
+    val isSpeakerOn: Boolean = true
 )

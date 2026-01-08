@@ -37,14 +37,21 @@ import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.BluetoothDisabled
 import androidx.compose.material.icons.filled.BluetoothSearching
 import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -62,10 +69,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.fission.wear.glasses.sdk.constant.GlassesConstant
 import com.lw.ai.glasses.ui.base.screen.popup.CenteredFadeInPopup
 import com.polidea.rxandroidble3.scan.ScanResult
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     onNavigate: (String) -> Unit,
@@ -74,7 +83,50 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     var showScanningDevices by remember { mutableStateOf(false) }
+    var showWsDebugDialog by remember { mutableStateOf(false) }
+    
     val context = LocalContext.current
+
+    if (showWsDebugDialog) {
+        AlertDialog(
+            onDismissRequest = { showWsDebugDialog = false },
+            title = { Text("环境切换") },
+            text = {
+                Column {
+                    Text("选择后全局生效 (已持久化存储)", style = MaterialTheme.typography.bodySmall)
+                    Spacer(modifier = Modifier.height(12.dp))
+                    LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                        items(GlassesConstant.ServerEnvironment.entries) { env ->
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        viewModel.updateEnvironment(env)
+                                        showWsDebugDialog = false
+                                    }
+                                    .padding(vertical = 8.dp)
+                            ) {
+                                RadioButton(
+                                    selected = env.wsUrl == GlassesConstant.AI_ASSISTANT_BASE_WS_URL,
+                                    onClick = {
+                                        viewModel.updateEnvironment(env)
+                                        showWsDebugDialog = false
+                                    }
+                                )
+                                Text(text = env.title, modifier = Modifier.padding(start = 8.dp))
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showWsDebugDialog = false }) {
+                    Text("关闭")
+                }
+            }
+        )
+    }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
@@ -122,7 +174,17 @@ fun HomeScreen(
     }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = MaterialTheme.colorScheme.background,
+        topBar = {
+            TopAppBar(
+                title = { Text("首页") },
+                actions = {
+                    IconButton(onClick = { showWsDebugDialog = true }) {
+                        Icon(Icons.Default.Settings, contentDescription = "环境设置")
+                    }
+                }
+            )
+        }
     ) { paddingValues ->
         Column(
             modifier = Modifier

@@ -4,14 +4,24 @@ import android.app.Application
 import android.os.Environment
 import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.Utils
+import com.fission.wear.glasses.sdk.GlassesManage
+import com.fission.wear.glasses.sdk.constant.GlassesConstant
+import com.lw.top.lib_core.data.datastore.AppDataManager
 import dagger.hilt.android.HiltAndroidApp
 import io.reactivex.rxjava3.exceptions.UndeliverableException
 import io.reactivex.rxjava3.plugins.RxJavaPlugins
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import java.io.IOException
 import java.net.SocketException
+import javax.inject.Inject
 
 @HiltAndroidApp
 class LinWearApplication : Application(){
+
+    @Inject
+    lateinit var appDataManager: AppDataManager
+
     override fun onCreate() {
         super.onCreate()
 
@@ -30,6 +40,21 @@ class LinWearApplication : Application(){
         }
 
         setupRxJavaErrorHandler()
+        initSavedEnvironment()
+    }
+
+    private fun initSavedEnvironment() {
+        MainScope().launch {
+            val savedEnvName = appDataManager.getEnvironment()
+            savedEnvName?.let { name ->
+                try {
+                    val env = GlassesConstant.ServerEnvironment.valueOf(name)
+                    GlassesManage.updateEnvironment(env)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
     }
 
     private fun setupRxJavaErrorHandler() {

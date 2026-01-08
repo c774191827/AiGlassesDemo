@@ -7,6 +7,7 @@ import com.fission.wear.glasses.sdk.GlassesManage
 import com.fission.wear.glasses.sdk.constant.LyCmdConstant
 import com.fission.wear.glasses.sdk.data.dto.DeviceSettingsStateDTO
 import com.fission.wear.glasses.sdk.events.CmdResultEvent
+import com.lw.ai.glasses.ui.home.ConnectionState
 import com.lw.top.lib_core.data.datastore.BluetoothDataManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -79,7 +80,6 @@ class SettingViewModel @Inject constructor(
     }
 
     fun onRecordDurationChanged(duration: Int) {
-        LogUtils.d("UI输入: 录像时长变更为 $duration 秒")
         GlassesManage.setVideoDuration(duration)
         _uiState.update { currentState ->
             val newItems = currentState.settingItems.map { item ->
@@ -209,6 +209,21 @@ class SettingViewModel @Inject constructor(
             options = SettingMapper.toScreenOrientationOptions()
         ))
 
+        items.add(
+            SettingItem.ActionItem(
+                id = "reboot_device",
+                title = "重启设备",
+                summary = "重启动力眼镜"
+            )
+        )
+        items.add(
+            SettingItem.ActionItem(
+                id = "restore_factory",
+                title = "恢复出厂设置",
+                summary = "清除所有用户数据并重启"
+            )
+        )
+
         val itemsWithDividers = items.flatMapIndexed { index, item ->
             if (index < items.size - 1) {
                 listOf(item, SettingItem.Divider)
@@ -218,6 +233,14 @@ class SettingViewModel @Inject constructor(
         }
 
         return SettingUiState(settingItems = itemsWithDividers)
+    }
+
+    fun rebootDevice() {
+        GlassesManage.rebootDevice()
+    }
+
+    fun restoreFactorySettings() {
+        GlassesManage.restoreFactorySettings()
     }
 
     private fun SettingUiState.getLatestGestureSettingsMap(): Map<LyCmdConstant.GestureType, LyCmdConstant.GestureAction> {
@@ -242,20 +265,25 @@ class SettingViewModel @Inject constructor(
     }
 
      fun onDisconnect() {
-         _uiState.update {
-             it.copy(isUnbinding = true)
-         }
-        GlassesManage.disConnect()
+         viewModelScope.launch {
+             val currentStateValue = bluetoothDataManager.getBluetoothState()
+             val connectionState = ConnectionState.fromValue(currentStateValue)
 
-        viewModelScope.launch {
-            delay(2000)
-            bluetoothDataManager.clearBluetoothDevice()
-            _uiState.update {
-                it.copy(isUnbinding = false)
-            }
-        }
-        _uiState.update {
-            it.copy(disconnectAction = it.disconnectAction.copy(isEnabled = false))
-        }
+             _uiState.update { it.copy(isUnbinding = true) }
+
+             if (connectionState == ConnectionState.CONNECTED) {
+                 GlassesManage.disConnect()
+                 delay(1000)
+             }
+
+             bluetoothDataManager.clearBluetoothDevice()
+             
+             _uiState.update {
+                 it.copy(
+                     isUnbinding = false,
+                     disconnectAction = it.disconnectAction.copy(isEnabled = false)
+                 )
+             }
+         }
     }
 }

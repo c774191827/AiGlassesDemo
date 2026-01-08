@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -57,7 +58,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.lw.top.lib_core.data.local.entity.TranslationEntity
+import com.lw.top.lib_core.data.local.entity.TranslationMessageEntity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,6 +70,21 @@ fun TranslatorScreen(
     var showClearDialog by remember { mutableStateOf(false) }
     var showLanguageSheet by remember { mutableStateOf(false) }
     var isSelectingSource by remember { mutableStateOf(true) }
+
+    // 将历史记录中的所有片段平铺展示
+    val allMessages = remember(uiState.history) {
+        uiState.history.flatMap { it.messages }.sortedByDescending { it.timestamp }
+    }
+
+    // 1. 创建 LazyListState
+    val listState = rememberLazyListState()
+
+    // 2. 当消息数量发生变化时，自动滚动到顶部
+    LaunchedEffect(allMessages.size) {
+        if (allMessages.isNotEmpty()) {
+            listState.animateScrollToItem(0)
+        }
+    }
 
     if (showClearDialog) {
         AlertDialog(
@@ -156,12 +172,16 @@ fun TranslatorScreen(
             )
 
             LazyColumn(
+                state = listState, // 3. 绑定 state
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth(),
                 contentPadding = PaddingValues(16.dp)
             ) {
-                items(uiState.messages) { message ->
+                items(
+                    items = allMessages,
+                    key = { it.requestId + it.messageId } // 复合主键作为唯一标识
+                ) { message ->
                     TranslationItemCard(
                         item = message,
                         onPlayAudio = { audioPath ->
@@ -406,7 +426,7 @@ fun RecordControlPanel(
 
 @Composable
 fun TranslationItemCard(
-    item: TranslationEntity,
+    item: TranslationMessageEntity,
     onPlayAudio: (String) -> Unit
 ) {
     Card(
@@ -450,7 +470,7 @@ fun TranslationItemCard(
                     modifier = Modifier.weight(1f)
                 )
 
-                if (!item.audioPath.isNullOrEmpty()) {
+                if (!item.audioPath.isNullOrEmpty() && item.isFinished) {
                     IconButton(
                         onClick = { onPlayAudio(item.audioPath!!) }
                     ) {
