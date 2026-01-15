@@ -73,32 +73,43 @@ class CallViewModel @Inject constructor(
                         endCall()
                     }
 
+                    is CmdResultEvent.RemoteVideoStateEvent -> {
+                        LogUtils.d("远端摄像头状态：${event.isMuted}")
+                        _uiState.update { it.copy(isRemoteVideoMuted = event.isMuted) }
+                    }
+
                     is AiTranslationEvent.AiTranslationResult -> {
-                        if (!event.data.isMe) {
-                            LogUtils.d("对方的数据："+event.data)
-                        }
                         handleStreamingTranslation(event.data)
                     }
+
+                    is CmdResultEvent.RemoteLanguageEvent->{
+                        LogUtils.d("远端语言：${event.language}")
+                    }
+
                     else -> {}
                 }
             }
         }
     }
 
+    /**
+     * 处理流式翻译：还原为 requestId-messageId 的复合 Key，防止消息覆盖
+     */
     private fun handleStreamingTranslation(result: com.fission.wear.glasses.sdk.data.dto.AiTranslationDTO) {
-        val reqId = result.id ?: ""
+        val requestId = result.id ?: ""
         val msgId = result.messageId ?: "0"
-        val compositeKey = "$reqId-$msgId"
+        val compositeKey = "$requestId-$msgId"
 
         _uiState.update { state ->
             val currentLogs = state.translationLogs.toMutableList()
             val existingIndex = currentLogs.indexOfFirst { it.id == compositeKey }
 
+            // 自己的展示原文，对方的展示译文
             val displayContent = if (result.isMe) {
-                result.originalText ?: ""
+                result.originalText
             } else {
-                result.translatedText ?: result.originalText ?: ""
-            }
+                result.translatedText
+            } ?: ""
 
             if (displayContent.isEmpty()) return@update state
 
@@ -110,13 +121,25 @@ class CallViewModel @Inject constructor(
             )
 
             if (existingIndex != -1) {
+                // 1. 如果 compositeKey 相同，更新内容 (打字机效果)
                 currentLogs[existingIndex] = newMessage
             } else {
+                // 2. 如果是新的片段，插入列表
                 currentLogs.add(newMessage)
             }
 
             state.copy(translationLogs = currentLogs)
         }
+    }
+
+    fun toggleRemoteAudio() {
+        val currentMuteStatus = uiState.value.isRemoteAudioMuted
+        val nextMuteStatus = !currentMuteStatus
+
+        _uiState.update { it.copy(isRemoteAudioMuted = nextMuteStatus) }
+
+        val volume = if (nextMuteStatus) 0 else 100
+        GlassesManage.setPlayVolume(volume)
     }
 
     fun setCallMode(mode: CallMode) {
@@ -128,15 +151,27 @@ class CallViewModel @Inject constructor(
     }
 
     fun toggleMic() {
-        val newMuteStatus = !_uiState.value.isMicMuted
+        val newMuteStatus = !uiState.value.isMicMuted
         _uiState.update { it.copy(isMicMuted = newMuteStatus) }
         GlassesManage.muteMicrophone(newMuteStatus)
     }
 
     fun toggleSpeaker() {
-        val newSpeakerStatus = !_uiState.value.isSpeakerOn
+        val newSpeakerStatus = !uiState.value.isSpeakerOn
         _uiState.update { it.copy(isSpeakerOn = newSpeakerStatus) }
         GlassesManage.enableSpeaker(newSpeakerStatus)
+    }
+
+    fun toggleVideo() {
+        val newMuteStatus = !uiState.value.isVideoMuted
+        _uiState.update { it.copy(isVideoMuted = newMuteStatus) }
+        GlassesManage.muteVideo(newMuteStatus)
+    }
+
+    fun flipCamera() {
+        val nextIsFront = !uiState.value.isFrontCamera
+        _uiState.update { it.copy(isFrontCamera = nextIsFront) }
+        GlassesManage.switchCamera(nextIsFront)
     }
 
     fun startCall(localView: TextureView? = null, remoteView: TextureView? = null) {
@@ -165,7 +200,9 @@ class CallViewModel @Inject constructor(
                 isRemoteVideoReady = false,
                 translationLogs = emptyList(),
                 isMicMuted = false,
-                isSpeakerOn = true
+                isSpeakerOn = true,
+                isVideoMuted = false,
+                isRemoteVideoMuted = false
             )
         }
         pendingLocalView = null

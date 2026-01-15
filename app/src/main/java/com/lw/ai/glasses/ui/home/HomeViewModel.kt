@@ -15,9 +15,11 @@ import com.fission.wear.glasses.sdk.config.BleScanConfig
 import com.fission.wear.glasses.sdk.constant.GlassesConstant
 import com.fission.wear.glasses.sdk.constant.GlassesConstant.ACTION_INDEX_MUSIC
 import com.fission.wear.glasses.sdk.constant.GlassesConstant.ACTION_INDEX_WEAR
+import com.fission.wear.glasses.sdk.events.AiAssistantEvent
 import com.fission.wear.glasses.sdk.events.CmdResultEvent
 import com.fission.wear.glasses.sdk.events.ConnectionStateEvent
 import com.fission.wear.glasses.sdk.events.ScanStateEvent
+import com.lw.ai.glasses.service.AiAssistantService
 import com.lw.top.lib_core.data.datastore.AppDataManager
 import com.lw.top.lib_core.data.datastore.BluetoothDataManager
 import com.polidea.rxandroidble3.exceptions.BleDisconnectedException
@@ -168,6 +170,7 @@ class HomeViewModel @Inject constructor(
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             permissions.add(Manifest.permission.NEARBY_WIFI_DEVICES)
+            permissions.add(Manifest.permission.POST_NOTIFICATIONS)
         }
 
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
@@ -192,6 +195,7 @@ class HomeViewModel @Inject constructor(
                                         name.contains("Glass", ignoreCase = true)
                                                 || name.contains("AG66", ignoreCase = true)
                                                 || name.contains("Tesee", ignoreCase = true)
+                                                || name.contains("AG188", ignoreCase = true)
                                     }
                             )
                         }
@@ -231,6 +235,10 @@ class HomeViewModel @Inject constructor(
                         viewModelScope.launch {
                             bluetoothDataManager.saveBluetoothState(ConnectionState.CONNECTED.value)
                         }
+
+                        // 启动 AI 助手前台保活服务
+                        AiAssistantService.start(context)
+
                         GlassesManage.getBatteryLevel()
                         GlassesManage.getMediaFileCount()
                         GlassesManage.connectAiAssistant(
@@ -241,6 +249,7 @@ class HomeViewModel @Inject constructor(
                             "tz5dgRLm6tXS8gRr"
                         )
                         GlassesManage.getActionState()
+
                     }
 
                     is ConnectionStateEvent.Disconnected -> {
@@ -256,6 +265,8 @@ class HomeViewModel @Inject constructor(
                                 it.copy(connectionState = ConnectionState.DISCONNECTED)
                             }
                         }
+
+                        AiAssistantService.stop(context)
 
                         viewModelScope.launch {
                             bluetoothDataManager.saveBluetoothState(ConnectionState.DISCONNECTED.value)
@@ -293,6 +304,11 @@ class HomeViewModel @Inject constructor(
                             }
 
                         }
+                    }
+
+                    is AiAssistantEvent.ReconnectRequired -> {
+                        //上层业务自己判断 是否满足重连环境。网络 wifi 是否正常。
+//                        GlassesManage.manualReconnect()
                     }
 
                     else -> {}

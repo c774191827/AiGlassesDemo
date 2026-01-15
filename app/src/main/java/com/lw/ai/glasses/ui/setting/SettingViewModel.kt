@@ -123,6 +123,12 @@ class SettingViewModel @Inject constructor(
                         GlassesManage.setWearDetection(selectedValue)
                     }
                 }
+
+                "voice_command" -> {
+                    if (selectedValue is Boolean) {
+                        setVoiceWakeUp(selectedValue)
+                    }
+                }
             }
         }
 
@@ -135,6 +141,21 @@ class SettingViewModel @Inject constructor(
                 }
             }
             currentState.copy(settingItems = newItems)
+        }
+    }
+
+    fun setVoiceWakeUp(enable: Boolean){
+        GlassesManage.setVoiceWakeUp(enable = enable)
+
+        _uiState.update { currentState ->
+            val updatedItems = currentState.settingItems.map { item ->
+                if (item is SettingItem.SwitchItem && item.id == "voice_command") {
+                    item.copy(isChecked = enable)
+                } else {
+                    item
+                }
+            }
+            currentState.copy(settingItems = updatedItems)
         }
     }
 
@@ -173,7 +194,7 @@ class SettingViewModel @Inject constructor(
             SettingItem.SwitchItem(
                 id = "voice_command",
                 title = "语音指令",
-                isChecked = dto.voiceCommandEnabled ?: false,
+                isChecked = dto.voiceCommandEnabled ?: true,
                 summary = "开启后可使用语音控制"
             )
         )

@@ -23,9 +23,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CallEnd
+import androidx.compose.material.icons.filled.FlipCameraAndroid
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.MicOff
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.VideoCall
+import androidx.compose.material.icons.filled.Videocam
+import androidx.compose.material.icons.filled.VideocamOff
 import androidx.compose.material.icons.filled.VoiceChat
 import androidx.compose.material.icons.filled.VolumeOff
 import androidx.compose.material.icons.filled.VolumeUp
@@ -34,6 +38,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -160,7 +165,6 @@ fun ActiveCallContent(
 ) {
     val listState = rememberLazyListState()
 
-    // 自动滚动到底部
     LaunchedEffect(uiState.translationLogs.size) {
         if (uiState.translationLogs.isNotEmpty()) {
             listState.animateScrollToItem(uiState.translationLogs.size - 1)
@@ -169,18 +173,22 @@ fun ActiveCallContent(
 
     Box(modifier = Modifier.fillMaxSize()) {
 
-        // 视频层 (底层铺满)
+        // 1. 视频流层 (最底层)
         if (uiState.callMode == CallMode.VIDEO) {
-            VideoOverlayLayout(uiState.isRemoteVideoReady)
+            VideoOverlayLayout(
+                isRemoteReady = uiState.isRemoteVideoReady,
+                isVideoMuted = uiState.isVideoMuted,
+                isRemoteVideoMuted = uiState.isRemoteVideoMuted
+            )
         }
 
-        // 通话背景：实时对话翻译记录 (覆盖在视频上)
+        // 2. 翻译记录层 (中间层)
         LazyColumn(
             state = listState,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp),
-            contentPadding = PaddingValues(top = 150.dp, bottom = 150.dp), // 为控制栏留出空间
+            contentPadding = PaddingValues(top = 100.dp, bottom = 150.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(uiState.translationLogs) { log ->
@@ -188,7 +196,55 @@ fun ActiveCallContent(
             }
         }
 
-        // 底部控制栏
+        // 3. 视频控制按钮层 (右上/侧边悬浮，必须在渲染层之后定义以接收点击)
+        if (uiState.callMode == CallMode.VIDEO) {
+            Column(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                FloatingActionButton(
+                    onClick = { viewModel.flipCamera() },
+                    containerColor = Color.Black.copy(alpha = 0.5f),
+                    contentColor = Color.White,
+                    shape = CircleShape,
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Icon(Icons.Default.FlipCameraAndroid, contentDescription = "切换摄像头")
+                }
+
+                FloatingActionButton(
+                    onClick = { viewModel.toggleVideo() },
+                    containerColor = if (uiState.isVideoMuted) MaterialTheme.colorScheme.error.copy(alpha = 0.7f) else Color.Black.copy(alpha = 0.5f),
+                    contentColor = Color.White,
+                    shape = CircleShape,
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Icon(
+                        imageVector = if (uiState.isVideoMuted) Icons.Default.VideocamOff else Icons.Default.Videocam,
+                        contentDescription = "视频开关"
+                    )
+                }
+
+                FloatingActionButton(
+                    onClick = { viewModel.toggleRemoteAudio() },
+                    containerColor = if (uiState.isRemoteAudioMuted) MaterialTheme.colorScheme.error.copy(alpha = 0.7f) else Color.Black.copy(alpha = 0.5f),
+                    contentColor = Color.White,
+                    shape = CircleShape,
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Icon(
+                        imageVector = if (uiState.isRemoteAudioMuted) Icons.Default.VolumeOff else Icons.Default.VolumeUp,
+                        contentDescription = "对方声音开关"
+                    )
+                }
+
+
+            }
+        }
+
+        // 4. 底部通话控制栏 (最顶层)
         Row(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -197,7 +253,6 @@ fun ActiveCallContent(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // 静音按钮
             IconButton(
                 onClick = { viewModel.toggleMic() },
                 modifier = Modifier
@@ -214,7 +269,6 @@ fun ActiveCallContent(
                 )
             }
 
-            // 挂断按钮
             IconButton(
                 onClick = { viewModel.endCall() },
                 modifier = Modifier
@@ -229,7 +283,6 @@ fun ActiveCallContent(
                 )
             }
 
-            // 扬声器按钮
             IconButton(
                 onClick = { viewModel.toggleSpeaker() },
                 modifier = Modifier
@@ -245,15 +298,20 @@ fun ActiveCallContent(
                     tint = Color.White
                 )
             }
+
         }
     }
 }
 
 @Composable
-fun VideoOverlayLayout(isRemoteReady: Boolean) {
+fun VideoOverlayLayout(
+    isRemoteReady: Boolean,
+    isVideoMuted: Boolean,
+    isRemoteVideoMuted: Boolean
+) {
     Box(modifier = Modifier.fillMaxSize().statusBarsPadding()) {
         // 远端视频
-        if (isRemoteReady) {
+        if (isRemoteReady && !isRemoteVideoMuted) {
             AndroidView(
                 factory = { ctx ->
                     TextureView(ctx).also {
@@ -270,9 +328,15 @@ fun VideoOverlayLayout(isRemoteReady: Boolean) {
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                    Spacer(Modifier.height(12.dp))
-                    Text("等待对方加入...", color = Color.White, fontSize = 14.sp)
+                    if (!isRemoteReady) {
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                        Spacer(Modifier.height(12.dp))
+                        Text("等待对方加入...", color = Color.White, fontSize = 14.sp)
+                    } else {
+                        Icon(Icons.Default.Person, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(64.dp))
+                        Spacer(Modifier.height(12.dp))
+                        Text("对方已关闭摄像头", color = Color.White, fontSize = 14.sp)
+                    }
                 }
             }
         }
@@ -286,21 +350,29 @@ fun VideoOverlayLayout(isRemoteReady: Boolean) {
             shape = RoundedCornerShape(8.dp),
             elevation = CardDefaults.cardElevation(4.dp)
         ) {
-            AndroidView(
-                factory = { ctx ->
-                    TextureView(ctx).also {
-                        GlassesManage.updateLocalView(it)
-                    }
-                },
-                modifier = Modifier.fillMaxSize()
-            )
+            if (!isVideoMuted) {
+                AndroidView(
+                    factory = { ctx ->
+                        TextureView(ctx).also {
+                            GlassesManage.updateLocalView(it)
+                        }
+                    },
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else {
+                Box(
+                    modifier = Modifier.fillMaxSize().background(Color.DarkGray),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.Default.Person, contentDescription = null, tint = Color.Gray)
+                }
+            }
         }
     }
 }
 
 @Composable
 fun TranslationBubble(log: TranslationMessage) {
-    // 自己在右侧，对方在左侧
     val alignment = if (log.isFromMe) Alignment.CenterEnd else Alignment.CenterStart
     val bubbleColor = if (log.isFromMe) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.8f)
     else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f)

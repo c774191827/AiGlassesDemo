@@ -33,7 +33,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -148,8 +147,12 @@ fun SettingScreen(
                     is SettingItem.DropdownItem<*> -> {
                         DropdownSettingItem(item = item, onItemSelected = viewModel::onSettingSelected)
                     }
-                    is SettingItem.SwitchItem -> {
-                        SwitchSettingItem(item = item, onCheckedChange = { /* TODO */ })
+                    is SettingItem.SwitchItem -> {    SwitchSettingItem(
+                        item = item,
+                        onCheckedChange = { isChecked ->
+                            viewModel.setVoiceWakeUp(isChecked)
+                        }
+                    )
                     }
                     is SettingItem.ActionItem -> {
                         ActionSettingItem(item = item) {
